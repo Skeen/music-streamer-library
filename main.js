@@ -1,4 +1,4 @@
-var WebTorrent = require('webtorrent-hybrid')
+var WebTorrent = require('webtorrent')
 
 var client = new WebTorrent()
 
@@ -28,9 +28,29 @@ if(command == "create_content")
 }
 else if(command == "seed")
 {
-    var buf = new Buffer('Content!');
-    buf.name = 'Music.txt';
-    client.seed(buf, function(torrent)
+    client.seed("res/Pixelland.mp3", {
+        announce: ["http://0.0.0.0:8000/announce"]
+    },
+    function(torrent)
+    {
+        torrent.on('wire', function (wire, addr)
+        {
+            console.log('connected to peer with address ' + addr)
+        });
+
+        console.log('Client is seeding: ', torrent.infoHash);
+        console.log("MagnetURI: " + torrent.magnetURI);
+    });
+}
+
+else if(command == "seed-buffer")
+{
+    var buf = new Buffer('Content here!');
+    buf.name = 'Transfer name here!';
+    client.seed(buf, {
+        announce: ["http://0.0.0.0:8000/announce"]
+    },
+    function(torrent)
     {
         torrent.on('wire', function (wire, addr)
         {
@@ -69,13 +89,49 @@ else if(command == "leech")
                 // File is the FileAPI
                 //console.log(file);
 
+                /*
                 var stream = file.createReadStream();
                 stream.on('data', function(chunk)
                 {
                     console.log('got %d bytes of data', chunk.length);
                     console.log(chunk.toString('utf8'));
                 });
-            });
+                */
+                file.getBuffer(function(err, buffer) 
+                {
+                    if (err)
+                    {
+                        console.error(err);
+                        process.exit(-1);
+                    }
+                    console.log("Downloaded " + file.name);
+
+                    var fs = require('fs');
+                    var filepath = "tmp/" + file.name;
+                    fs.writeFile(filepath, buffer, function(err)
+                    {
+                        if (err)
+                        {
+                            console.error(err);
+                            process.exit(-1);
+                        }
+                   
+                        var Player = require('player');
+                        var player = new Player(filepath);
+                        player.play(function(err, player)
+                        {
+                            if (err)
+                            {
+                                console.error(err);
+                                process.exit(-1);
+                            }
+
+                            console.log('playend!');
+                        });
+                    });
+                });
+                //console.log(buffer)
+            })
         });
     });
 }

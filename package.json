@@ -4,14 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js seed",
+    "tracker": "node ./node_modules/bittorrent-tracker/bin/cmd.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bencode": "^0.8.0",
     "create-torrent": "^3.24.1",
+    "player": "^0.6.1",
     "webtorrent": "^0.89.0",
     "webtorrent-hybrid": "^1.0.0"
+  },
+  "devDependencies": {
+    "bittorrent-tracker": "^8.0.0"
   }
 }
