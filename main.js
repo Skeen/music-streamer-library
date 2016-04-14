@@ -107,6 +107,7 @@ else if(command == "leech")
                     console.log("Downloaded " + file.name);
 
                     var fs = require('fs');
+                    // TODO: Ensure that tmp exists
                     var filepath = "tmp/" + file.name;
                     fs.writeFile(filepath, buffer, function(err)
                     {
