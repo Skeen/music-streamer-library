@@ -36,6 +36,7 @@ module.exports = {
       css : output + 'css/',
       html: output,
       js  : output + 'js/',
+      tmp : tmp,
       ts  : ts_tmp
     }
   }

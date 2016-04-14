@@ -6,6 +6,7 @@ var server      = require('./build-tasks/server');
 var typescript  = require('./build-tasks/typescript');
 var statics     = require('./build-tasks/statics');
 var browserify  = require('./build-tasks/browserify');
+var clean       = require('./build-tasks/clean');
 
 // Sub-tasks
 gulp.task('server:reload', "Reload the attached browsers", server.reload);
@@ -33,6 +34,8 @@ gulp.task('watch', false, [
     'typescript:watch',
     'browserify:watch'
 ]);
+
+gulp.task('clean', "Cleans up the build environment", clean.clean);
 
 gulp.task('serve', "Compile and serve the project", ['server:serve']);
 
