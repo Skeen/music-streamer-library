@@ -39,4 +39,11 @@ gulp.task('clean', "Cleans up the build environment", clean.clean);
 
 gulp.task('serve', "Compile and serve the project", ['server:serve']);
 
-gulp.task('default', "Serve project watching for changes", ['serve', 'watch']);
+gulp.task('website', "Serve project watching for changes", ['serve', 'watch']);
+
+gulp.task('node', "Run cli", ['typescript:compile'], function()
+{
+    // TODO: Run tmp/ts/node_main.js
+});
+
+gulp.task('default', ["website"]);

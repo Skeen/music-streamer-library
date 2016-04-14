@@ -15,7 +15,7 @@ var assign = require('lodash.assign');
 
 // add custom browserify options here
 var b_opts = assign({}, watchify.args, opts.browserify);
-var bundler = watchify(browserify(b_opts).add('./tmp/ts/main.js')); 
+var bundler = watchify(browserify(b_opts).add(src.browserify)); 
 
 // Output build logs to the gulp terminal
 bundler.on('log', gutil.log);
@@ -23,16 +23,15 @@ bundler.on('log', gutil.log);
 function bundle()
 {
   return bundler.bundle()
-    // log errors if they happen
+    // Log errors when they happen
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))
     .pipe(source('bundle.js'))
-    // optional, remove if you don't need to buffer file contents
     .pipe(buffer())
-    // optional, remove if you dont want sourcemaps
-    .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
-       // Add transformation tasks to the pipeline here.
-    .pipe(sourcemaps.write('./')) // writes .map file
-    .pipe(gulp.dest('./dist/js'));
+    // Generate source maps
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(sourcemaps.write('./'))
+    // Write output file
+    .pipe(gulp.dest(dest.js));
 }
 
 // Compile everything

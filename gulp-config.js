@@ -29,7 +29,7 @@ module.exports = {
     sources: {
       statics: 'src/statics/*.{html,js,css}',
       typescript: 'src/ts/*.ts',
-      browserify: ts_tmp + '*.js'
+      browserify: ts_tmp + 'main_browser.js'
     },
     destinations: {
       dist: output,
