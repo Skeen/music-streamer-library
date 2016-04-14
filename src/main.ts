@@ -1,20 +1,23 @@
+declare var require: any
+
 var WebTorrent = require('webtorrent')
 
 var client = new WebTorrent()
 
-client.on('error', function (err) {
+client.on('error', function (err:any) {
     console.error('ERROR: ' + err.message)
 })
 
 document.querySelector('form').addEventListener('submit', function (e) {
     e.preventDefault() // Prevent page refresh
 
-        var torrentId = document.querySelector('form input[name=torrentId]').value
+        var element:any = document.querySelector('form input[name=torrentId]');
+        var torrentId = element.value
         log('Adding ' + torrentId)
         client.add(torrentId, onTorrent)
 })
 
-function onTorrent (torrent) {
+function onTorrent (torrent:any) {
     log('Got torrent metadata!')
         log(
                 'Torrent info hash: ' + torrent.infoHash + ' ' +
@@ -33,10 +36,10 @@ function onTorrent (torrent) {
     })
 
     // Render all files into to the page
-    torrent.files.forEach(function (file) {
+    torrent.files.forEach(function (file:any) {
         file.appendTo('.log')
             log('(Blob URLs only work if the file is loaded from a server. "http//localhost" works. "file://" does not.)')
-            file.getBlobURL(function (err, url) {
+            file.getBlobURL(function (err:any, url:any) {
                 if (err) return log(err.message)
                     log('File done.')
                         log('<a href="' + url + '">Download full file: ' + file.name + '</a>')
@@ -44,7 +47,7 @@ function onTorrent (torrent) {
     })
 }
 
-function log (str) {
+function log (str:any) {
     var p = document.createElement('p')
         p.innerHTML = str
         document.querySelector('.log').appendChild(p)
