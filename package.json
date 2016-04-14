@@ -11,21 +11,24 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "bencode": "^0.8.0",
-    "create-torrent": "^3.24.1",
-    "webtorrent-hybrid": "^1.0.0"
-  },
   "devDependencies": {
     "bittorrent-tracker": "^8.0.0",
+    "browser-sync": "^2.12.3",
     "browserify": "^13.0.0",
+    "cli-color": "^1.1.0",
     "gulp": "^3.9.1",
+    "gulp-help": "^1.6.1",
     "gulp-sourcemaps": "^1.6.0",
+    "gulp-typescript": "^2.13.0",
     "gulp-util": "^3.0.7",
     "lodash.assign": "^4.0.8",
+    "merge2": "^1.0.2",
     "tsify": "^0.14.7",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
+  },
+  "dependencies": {
+    "webtorrent": "^0.90.3"
   }
 }

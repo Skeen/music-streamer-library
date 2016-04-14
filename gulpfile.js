@@ -1,49 +1,39 @@
-'use strict';
+// Include gulp
+var gulp        = require('gulp-help')(require('gulp'));
 
-var watchify = require('watchify');
-var browserify = require('browserify');
-var gulp = require('gulp');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var gutil = require('gulp-util');
-var sourcemaps = require('gulp-sourcemaps');
-var assign = require('lodash.assign');
-var tsify = require('tsify');
+// Include build-tasks
+var server      = require('./build-tasks/server');
+var typescript  = require('./build-tasks/typescript');
+var statics     = require('./build-tasks/statics');
+var browserify  = require('./build-tasks/browserify');
 
-// add custom browserify options here
-var customOpts = {
-  entries: [],
-  debug: true
-};
-var opts = assign({}, watchify.args, customOpts);
-var b = watchify(browserify(opts).add('./src/main.ts').plugin(tsify, { noImplicitAny: true })); 
+// Sub-tasks
+gulp.task('server:reload', "Reload the attached browsers", server.reload);
+gulp.task('server:serve', false, ['compile'], server.serve);
 
-// add transformations here
-// i.e. b.transform(coffeeify);
+gulp.task('statics:compile', "Compile statics (html, css) sources", statics.compile);
+gulp.task('statics:watch', false, statics.watch);
 
-gulp.task('js', bundle); // so you can run `gulp js` to build the file
-b.on('update', bundle); // on any dep update, runs the bundler
-b.on('log', gutil.log); // output build logs to terminal
+gulp.task('typescript:compile', "Compile typescript sources", typescript.compile);
+gulp.task('typescript:watch', false, typescript.watch);
 
-gulp.task('html', html);
+gulp.task('browserify:bundle', false, browserify.bundle);
+gulp.task('browserify:compile', "Bundle js sources", ['typescript:compile'], browserify.compile);
+gulp.task('browserify:watch', false, browserify.watch);
 
-gulp.task('default', ['html', 'js']);
+// Accumulative tasks
+gulp.task('compile', "Compile everything", [
+    'statics:compile',
+    'typescript:compile',
+    'browserify:compile'
+]);
 
-function html() {
-    gulp.src('./res/*.html')
-        .pipe(gulp.dest('./dist'));
-}
+gulp.task('watch', false, [
+    'statics:watch',
+    'typescript:watch',
+    'browserify:watch'
+]);
 
-function bundle() {
-  return b.bundle()
-    // log errors if they happen
-    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-    .pipe(source('bundle.js'))
-    // optional, remove if you don't need to buffer file contents
-    .pipe(buffer())
-    // optional, remove if you dont want sourcemaps
-    .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
-       // Add transformation tasks to the pipeline here.
-    .pipe(sourcemaps.write('./')) // writes .map file
-    .pipe(gulp.dest('./dist'));
-}
+gulp.task('serve', "Compile and serve the project", ['server:serve']);
+
+gulp.task('default', "Serve project watching for changes", ['serve', 'watch']);

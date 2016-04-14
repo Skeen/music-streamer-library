@@ -53,3 +53,4 @@ function log (str:any) {
         document.querySelector('.log').appendChild(p)
 }
 
+log("A");
