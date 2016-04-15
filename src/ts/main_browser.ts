@@ -1,5 +1,3 @@
-declare var require: any
-
 var WebTorrent = require('webtorrent')
 
 var client = new WebTorrent()
@@ -54,3 +52,16 @@ function log (str:any) {
 }
 
 log("A");
+
+var dragDrop = require('drag-drop')
+
+// When user drops files on the browser, create a new torrent and start seeding it!
+dragDrop('#droparea', function (files:any) {
+    console.log('Here are the dropped files', files);
+    client.seed(files, function (torrent:any) {
+        console.log('Client is seeding:', torrent.infoHash);
+        console.log('magnet link:', torrent.magnetURI);
+        
+    })
+})
+

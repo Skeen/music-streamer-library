@@ -13,7 +13,9 @@ module.exports = {
       port   : 1987,
       server : {
         baseDir: output
-      }
+      },
+      // Enable to syncronize browser input
+      ghostMode: false
     },
     browserify: {
         debug: true
@@ -21,15 +23,20 @@ module.exports = {
     typescript: {
         noImplicitAny: true,
         declaration: true,
-        noExternalResolve: true
+        noExternalResolve: false,
+        moduleResolution: "node",
+        emitDecoratorMetadata: true,
+        experimentalDecorators: true,
+        removeComments: false,
     }
   },
   paths: {
     base: output,
     sources: {
       statics: 'src/statics/*.{html,js,css}',
-      typescript: 'src/ts/*.ts',
-      browserify: ts_tmp + 'main_browser.js'
+      typescript: ['src/ts/*.ts', 'typings/main.d.ts'],
+      browserify: ts_tmp + 'main_browser.js',
+      desktop: ts_tmp + 'main.js'
     },
     destinations: {
       dist: output,

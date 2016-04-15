@@ -5,15 +5,15 @@ var opts        = gulp_config.pluginOptions;
 var src         = gulp_config.paths.sources;
 var dest        = gulp_config.paths.destinations;
 
-var ts      = require('gulp-typescript');
+var tsc     = require('gulp-typescript');
 var merge   = require('merge2');
 
-var tsProject = ts.createProject(opts.typescript);
+var tsProject = tsc.createProject(opts.typescript);
 
 // Compile everything
 var compile = function()
 {
-	var tsResult = gulp.src(src.typescript).pipe(ts(tsProject));
+	var tsResult = gulp.src(src.typescript).pipe(tsc(tsProject));
 
 	return merge([
 		tsResult.dts.pipe(gulp.dest(dest.ts)),
