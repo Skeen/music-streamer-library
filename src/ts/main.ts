@@ -1,8 +1,15 @@
-var WebTorrent = require('webtorrent-hybrid')
+/// <reference path="dht.ts"/>
+
+var WebTorrent = require('webtorrent-hybrid');
 var clc = require('cli-color');
-var fs = require('fs')
+var fs = require('fs');
 
 var client = new WebTorrent()
+
+import { HashTable, HTTP_HashTable } from "./dht";
+
+// TODO: Replace by 'new Distributed_HashTable();'
+var hash_table:HashTable = new HTTP_HashTable();
 
 client.on('error', function (err:any) {
     console.error('ERROR: ' + err.message);
@@ -11,26 +18,6 @@ client.on('error', function (err:any) {
 
 var path = process.argv[2];
 console.log("Serving files from: " + path + "\n");
-
-var request = require('request');
-var notify_overlay = function(file:string, uri:string)
-{
-    var crypto = require('crypto');
-    var shasum = crypto.createHash('sha1');
-    shasum.update(file);
-    var key = shasum.digest('hex');
-    request.post('http://localhost:3000/put?id=' + key, {form:{value:uri}},
-        function(err:any, res:any, body:any)
-    {
-        if(err)
-        {
-            console.error(err.message);
-            return;
-        }
-        //console.log(res);
-        console.log(body);
-    });
-}
 
 var file_log = function(file:string, msg:string)
 {
@@ -68,7 +55,15 @@ fs.readdir(path, function(err:any, files:any)
                  file_log(file, "Seeding!");
                  file_log(file, "MagnetURI: '" + clc.green(torrent.magnetURI) + "'");
 
-                 notify_overlay(file, torrent.magnetURI);
+                 hash_table.put(file, torrent.magnetURI, function(err, value)
+                 {
+                     if(err)
+                     {
+                        file_log(file, "Unable to store in overlay network: " + err.message);
+                        return;
+                     }
+                     file_log(file, "Stored in overlay network: " + value);
+                 });
              });
          })(path + file);
     }

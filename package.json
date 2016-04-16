@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node main.js seed",
     "tracker": "node ./node_modules/bittorrent-tracker/bin/cmd.js",
-    "bundle": "node ./node_modules/browserify/bin/cmd.js web.js -o build/bundle.js"
+    "bundle": "node ./node_modules/browserify/bin/cmd.js web.js -o build/bundle.js",
+    "postinstall": "typings install"
   },
   "author": "",
   "license": "ISC",
@@ -32,6 +33,7 @@
   "dependencies": {
     "cli-color": "^1.1.0",
     "drag-drop": "^2.11.0",
+    "request": "^2.71.0",
     "webtorrent": "^0.90.3",
     "webtorrent-hybrid": "^1.0.2"
   }

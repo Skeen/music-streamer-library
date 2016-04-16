@@ -28,6 +28,8 @@ module.exports = {
         emitDecoratorMetadata: true,
         experimentalDecorators: true,
         removeComments: false,
+        module: "commonjs",
+        moduleResolution: "node"
     }
   },
   paths: {

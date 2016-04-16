@@ -3,6 +3,11 @@ var dragDrop = require('drag-drop')
 
 var client = new WebTorrent()
 
+import { HashTable, HTTP_HashTable } from "./dht";
+
+// TODO: Replace by 'new Distributed_HashTable();'
+var hash_table:HashTable = new HTTP_HashTable();
+
 client.on('error', function (err:any) {
     console.error('ERROR: ' + err.message)
 })
@@ -48,14 +53,32 @@ function onTorrent (torrent:any) {
     })
 }
 
-document.querySelector('form').addEventListener('submit', function (e) {
+document.querySelector('#magnet').addEventListener('submit', function (e) {
     e.preventDefault() // Prevent page refresh
 
-    var element:any = document.querySelector('form input[name=torrentId]');
+    var element:any = document.querySelector('#magnet input[name=torrentId]');
     var torrentId = element.value
     log('Adding ' + torrentId)
     client.add(torrentId, onTorrent)
-})
+});
+
+document.querySelector('#search').addEventListener('submit', function (e) {
+    e.preventDefault() // Prevent page refresh
+
+    var element:any = document.querySelector('#search input[name=search_string]');
+    var search_string = element.value
+    log('Searching for ' + search_string);
+
+    hash_table.get(search_string, function(err, value)
+    {
+        if(err)
+        {
+            log("Unable to query overlay network: " + err.message);
+            return;
+        }
+        log("Found value: " + value);
+    });
+});
 
 // When user drops files on the browser, create a new torrent and start seeding it!
 dragDrop('#droparea', function (files:any) {
@@ -71,10 +94,21 @@ dragDrop('#droparea', function (files:any) {
     log(list);
 
     log("Starting to seed them!");
-
-    client.seed(files, function (torrent:any)
+    files.forEach(function (file:any)
     {
-        print_torrent(torrent);
+        client.seed(file, function (torrent:any)
+        {
+            print_torrent(torrent);
+            hash_table.put(file.name, torrent.magnetURI, function(err, value)
+            {
+                if(err)
+                {
+                    log("Unable to store in overlay network: " + err.message);
+                    return;
+                }
+                log("Stored in overlay network: " + value);
+            });
+        });
     });
 })
 
