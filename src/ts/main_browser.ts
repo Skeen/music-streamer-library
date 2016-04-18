@@ -1,5 +1,6 @@
 var WebTorrent = require('webtorrent')
 var dragDrop = require('drag-drop')
+var mm = require('musicmetadata')
 
 var client = new WebTorrent()
 
@@ -49,7 +50,43 @@ function onTorrent (torrent:any) {
             }
             log('File done.');
             log('<a href="' + url + '">Download full file: ' + file.name + '</a>');
-        })
+        });
+
+        var parser = mm(file.createReadStream(), {assumeStream: true}, function(err:any, metadata:any)
+        {
+            if (err) throw err;
+            log(JSON.stringify(metadata, null, 4));
+        });
+
+        /* // Works, but wraps stream with another stream
+        var Stream = require('stream');
+         
+        var src = new Stream();
+        src.readable = true;
+        var parser = mm(src, function(err:any, metadata:any)
+        {
+            if (err) throw err;
+            log(JSON.stringify(metadata, null, 4));
+        });
+
+        var readable = file.createReadStream();
+        readable.on('data', (chunk:any) => {
+            src.emit('data', chunk);
+            console.log('got %d bytes of data', chunk.length);
+        });
+        */
+
+        /* // Works, but emitting only when entire file is downloaded
+        file.getBuffer(function (err:any, buffer:any) {
+            if (err) throw err;
+            var blob = new Blob([ buffer ], { type: 'application/octet-binary' });
+            var parser = mm(blob, function(err:any, metadata:any)
+            {
+                if (err) throw err;
+                log(JSON.stringify(metadata, null, 4));
+            });
+        });
+        */
     })
 }
 
@@ -109,6 +146,11 @@ dragDrop('#droparea', function (files:any) {
                 log("Stored in overlay network: " + value);
             });
         });
+        var parser = mm(file, function(err:any, metadata:any)
+                {
+                    if (err) throw err;
+                    log(JSON.stringify(metadata, null, 4));
+                });
     });
 })
 

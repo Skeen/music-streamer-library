@@ -8,7 +8,7 @@
     "start": "node main.js seed",
     "tracker": "node ./node_modules/bittorrent-tracker/bin/cmd.js",
     "bundle": "node ./node_modules/browserify/bin/cmd.js web.js -o build/bundle.js",
-    "postinstall": "typings install"
+    "postinstall": "typings install; patch node_modules/musicmetadata/lib/browser.js musicmetadata.patch"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +16,6 @@
     "bittorrent-tracker": "^8.0.0",
     "browser-sync": "^2.12.3",
     "browserify": "^13.0.0",
-    "cli-color": "^1.1.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-help": "^1.6.1",
@@ -33,6 +32,7 @@
   "dependencies": {
     "cli-color": "^1.1.0",
     "drag-drop": "^2.11.0",
+    "musicmetadata": "^2.0.2",
     "request": "^2.71.0",
     "webtorrent": "^0.90.3",
     "webtorrent-hybrid": "^1.0.2"
