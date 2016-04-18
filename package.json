@@ -1,16 +1,15 @@
 {
   "name": "music-streamer",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A WebTorrent (WebRTC) based music distribution network",
+  "main": "dist/js/bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node main.js seed",
+    "start": "gulp",
     "tracker": "node ./node_modules/bittorrent-tracker/bin/cmd.js",
-    "bundle": "node ./node_modules/browserify/bin/cmd.js web.js -o build/bundle.js",
-    "postinstall": "typings install; patch node_modules/musicmetadata/lib/browser.js musicmetadata.patch"
+    "postinstall": "typings install; patch -N node_modules/musicmetadata/lib/browser.js musicmetadata.patch"
   },
-  "author": "",
+  "author": "Emil 'Skeen' Madsen",
   "license": "ISC",
   "devDependencies": {
     "bittorrent-tracker": "^8.0.0",
