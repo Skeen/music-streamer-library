@@ -14,9 +14,9 @@ class Song
 				artists?: Artist[], albums?: Album[])
 	{
 		this.title = title;
-		this.genre = genre 		|| "unknown";
-		this.year = year 		|| -1;
-		this.duration = dur		|| -1;
+		this.genre = genre 		|| null;
+		this.year = year 		|| null;
+		this.duration = dur		|| null;
 		this.artists = artists 	|| [];
 		this.albums = albums 	|| [];
 	}
