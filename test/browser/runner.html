@@ -7,16 +7,12 @@
         <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
     </head>
     <body>
+        <!-- TODO: Test stuff from inside the bundle! -->
+        <!-- <script src="../../dist/js/bundle.js"></script> -->
         <script src="../../node_modules/should/should.js"></script> 
         <script src="../../node_modules/mocha/mocha.js"></script> 
         <script>mocha.setup('bdd')</script> 
-        <script>
-            describe('true', function () {
-                it('should be true', function () {
-                    true.should.equal(true);
-                });
-            });
-        </script> 
+        <script src="runner.js"></script> 
         <script>
             mocha.run();
         </script> 
