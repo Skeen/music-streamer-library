@@ -42,6 +42,8 @@ gulp.task('watch', false, [
 
 gulp.task('clean', "Cleans up the build environment", clean.clean);
 
+gulp.task('build', "Compile and watch for changes", ['compile', 'watch']);
+
 gulp.task('serve', "Compile and serve the project", ['server:serve']);
 
 gulp.task('browser', "Serve project watching for changes", ['serve', 'watch']);
