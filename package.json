@@ -4,8 +4,9 @@
   "description": "A WebTorrent (WebRTC) based music distribution network",
   "main": "dist/js/bundle.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "gulp test",
     "start": "gulp",
+    "seeder": "gulp desktop",
     "tracker": "node ./node_modules/bittorrent-tracker/bin/cmd.js",
     "postinstall": "typings install; patch -N node_modules/musicmetadata/lib/browser.js musicmetadata.patch"
   },
