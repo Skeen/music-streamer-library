@@ -62,15 +62,20 @@ function onTorrent (torrent:any) {
     })
 }
 
+// Event to download torrent when user clicks button, use text input field.
 document.querySelector('#magnet').addEventListener('submit', function (e) {
     e.preventDefault() // Prevent page refresh
 
+	// Get torrent magnet from text input field.
     var element:any = document.querySelector('#magnet input[name=torrentId]');
     var torrentId = element.value
     log('Adding ' + torrentId)
+	// Callback when torrentId metadata has been retrieved,
+	// 	and torrent is ready to be downloaded
     client.add(torrentId, onTorrent)
 });
 
+// Event to search for a file in the CMS, using input from text input field.
 document.querySelector('#search').addEventListener('submit', function (e) {
     e.preventDefault() // Prevent page refresh
 
