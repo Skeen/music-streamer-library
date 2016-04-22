@@ -217,28 +217,7 @@ function handle_lookup(value:any)
     {
         var song:Song = Song.fromJSON(object.payload);
 
-        var output = "Found song: " + song.getTitle() + " ";
-        output += '<a onclick="download_torrent(' + "'" + song.getMagnet() + "'" + ');" href="javascript:void(0);">' + "Play Now" + '</a><br>';
-
-        output += "Genre: " + song.getGenre() + "<br>";
-        output += "Year: " + song.getYear() + "<br>";
-        output += "Duration: " + song.getDuration() + "<br>";
-
-        output += "Artists: <br>";
-        var list = '<ul>';
-        song.getArtists().forEach(function(artist:string)
-        {
-            list += '<li>';
-            list += '<a onclick="dht_lookup(' + "'" + artist + "'" + ');" href="javascript:void(0);">' + artist + '</a>';
-            list += '</li>';
-        });
-        list += '</ul>';
-        output += list;
-
-        output += "Album: " + '<a onclick="dht_lookup(' + "'" + song.getAlbum() + "'" + ');" href="javascript:void(0);">' + song.getAlbum() + '</a><br>';
-        output += "MagnetURI: " + '<a href="' + song.getMagnet() + '" target="_blank">[Magnet URI]</a>';
-
-        log(output);
+        song_printer(song);
     }
 }
 
@@ -263,7 +242,7 @@ document.querySelector('#search').addEventListener('submit', function (e) {
 });
 
 // Avoid lookup_key
-function song_printer(song:Song, lookup_key:string, query?:string)
+function song_printer(song:Song, lookup_key?:string, query?:string)
 {
     var output = "<b>" + song.getTitle() + "</b> - ";
     
