@@ -28,10 +28,9 @@ export class HTTP_HashTable implements HashTable
         this.server_url = 'http://localhost:3000/';
     }
 
-    put(key:string, value:string, callback?:(err?:any, value?:string) => void) : void
+    put_raw(hash:string, value:string, callback?:(err?:any, value?:string) => void) : void
     {
-        var hash_key = sha1(key);
-        var endpoint = this.server_url + 'put?id=' + hash_key;
+        var endpoint = this.server_url + 'put?id=' + hash;
 
         HTTP_HashTable.request.post(endpoint, {'form':{'value':value}},
             function(err:any, res:any, body:any)
@@ -53,10 +52,15 @@ export class HTTP_HashTable implements HashTable
         });
     }
 
-    get(key:string, callback?:(err?:any, value?:string) => void) : void
+    put(key:string, value:string, callback?:(err?:any, value?:string) => void) : void
     {
         var hash_key = sha1(key);
-        var endpoint = this.server_url + 'get?id=' + hash_key;
+        this.put_raw(hash_key, value, callback);
+    }
+
+    get_raw(hash:string, callback?:(err?:any, value?:string) => void) : void
+    {
+        var endpoint = this.server_url + 'get?id=' + hash;
 
         HTTP_HashTable.request.get(endpoint,
             function(err:any, res:any, body:any)
@@ -76,6 +80,12 @@ export class HTTP_HashTable implements HashTable
             callback(null,body);
             console.log(body);
         });
+    }
+
+    get(key:string, callback?:(err?:any, value?:string) => void) : void
+    {
+        var hash_key = sha1(key);
+        this.get_raw(hash_key, callback);
     }
 }
 /*
