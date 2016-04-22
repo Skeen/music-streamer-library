@@ -72,14 +72,9 @@ export class Song
 	// duration should be in milliseconds.
 	constructor(title: string, genre?: string, 
 				year?: number, dur?: number,
-<<<<<<< HEAD
 				artists?: string[], album?: string,
-				magnet?: string)
-=======
-				artists?: Artist[], album?: Album,
 				magnet?: string, buffer?: Buffer, 
 				fileName?: string, encoding?: string)	
->>>>>>> 3acda5c6f46a3c2d7a9a6221ffc00cd02e4af056
 	{
 		this.title = title;
 		this.genre = genre 		|| null;
