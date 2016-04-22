@@ -36,7 +36,20 @@ export class HTTP_HashTable implements HashTable
         HTTP_HashTable.request.post(endpoint, {'form':{'value':value}},
             function(err:any, res:any, body:any)
         {
-            callback(err, body);
+            if(err)
+            {
+                console.error(err.message);
+                callback(err);
+                return;
+            }
+             if(res.statusCode !== 200)
+            {
+                console.log(body);
+                callback(body);
+                return;
+            }
+            callback(null, body);
+            console.log(body);
         });
     }
 
@@ -54,8 +67,13 @@ export class HTTP_HashTable implements HashTable
                 callback(err);
                 return;
             }
+            if(res.statusCode !== 200)
+            {
+                console.log(body);
+                callback(body);
+                return;
+            }
             callback(null,body);
-            //console.log(res);
             console.log(body);
         });
     }
