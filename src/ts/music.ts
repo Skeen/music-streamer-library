@@ -1,4 +1,20 @@
 var buffer = require('buffer');
+var includes = require('array-includes');
+
+function bufferToRenderable(song: Song)
+{
+	var sFileName: string = song.getFileName();
+	var file =
+		{
+			name: sFileName,
+			createReadStream: function(opts: any)
+			{
+				var start = opts.start;
+				var end = opts.end;
+			}
+		}
+	return file;
+}
 
 export class Playlist
 {
@@ -40,19 +56,24 @@ export class Song
 	private year: number;
 	private duration: number;
 
-	// Song belongs to:
-	private artists: Artist[];
-	private album: Album;
+	// Song belongs to: (hashes)
+	private artists: string[];
+	private album: string;
 
 	// Finding this song in the net
 	private magnet: string;
+
+	// Data and filetype
 	private buffer: Buffer;
-	
+	private fileName: string;
+	private encoding: string;
+
 	// duration should be in milliseconds.
 	constructor(title: string, genre?: string, 
 				year?: number, dur?: number,
-				artists?: Artist[], album?: Album,
-				magnet?: string)
+				artists?: string[], album?: string,
+				magnet?: string, buffer?: Buffer, 
+				fileName?: string, encoding?: string)	
 	{
 		this.title = title;
 		this.genre = genre 		|| null;
@@ -61,6 +82,55 @@ export class Song
 		this.artists = artists 	|| [];
 		this.album = album 	    || null;
 		this.magnet = magnet	|| null;
+		this.buffer = buffer	|| null;
+		this.fileName = fileName|| null;
+		this.encoding = encoding|| null;
+	}
+
+    static fromJSON(obj:any)
+    {
+        return new Song(obj.title, obj.genre, obj.year, obj.duration,
+                        obj.artists, obj.album, obj.magnet, null,
+                        obj.fileName, obj.encoding);
+    }
+
+	private getEncodingFromFilename()
+	{
+		// If encoding is not set, get from filename if valid
+		if(this.encoding == null && this.fileName != null)
+		{
+			var fnSplit = this.fileName.split('.');
+			var fileExt = fnSplit.pop();
+			if(fileExt == '.wav' || '.aac' || '.ogg' || '.oga')
+			{
+				this.encoding = fileExt;
+			}
+		}
+	}
+
+	public getFileName() : string
+	{
+		return this.fileName;
+	}
+
+	public getBuffer() : Buffer
+	{
+		return this.buffer;
+	}
+
+	public setBuffer(buffer: Buffer)
+	{
+		this.buffer = buffer;
+	}
+
+	public getEncoding() : string
+	{
+		return this.encoding;
+	}
+
+	public setEncoding(enc: string)
+	{
+		this.encoding = enc;
 	}
 
 	public getTitle() : string
@@ -83,11 +153,11 @@ export class Song
 		return this.duration;
 	}
 
-	public getArtist(): Artist[]
+	public getArtists(): string[]
 	{
 		return this.artists;
 	}
-
+/*
 	public setArtist(artists: Artist[])
 	{
 		this.artists = artists;
@@ -97,16 +167,17 @@ export class Song
 	{
 		this.artists.push(artist);
 	}
-
-	public getAlbum() : Album
+*/
+	public getAlbum() : string
 	{
 		return this.album;
 	}
-
+/*
 	public setAlbum(album: Album)
 	{
 		this.album = album;
 	}
+    */
 
 	public getMagnet(): string
 	{
@@ -123,45 +194,76 @@ export class Artist
 {
 	private name: string;
 	//private songs: Song[];
-	private albums: Album[];
+	private albums: string[];
 
 	//constructor(name: string, songs?: Song[], albums?: Album[])
-	constructor(name: string, albums?: Album[])
+	constructor(name: string, albums?: string[])
 	{
 		this.name = name;
 		//this.songs = songs 	|| [];
 		this.albums = albums|| [];
 	}
 
+    static fromJSON(obj:any)
+    {
+        return new Artist(obj.name, obj.albums);
+    }
+
     public getName(): string
     {
         return this.name;
+    }
+
+    public getAlbums(): string[]
+    {
+        return this.albums;
+    }
+
+    public addAlbumHash(album: string): boolean
+    {
+        if(includes(this.albums, album))
+        {
+            return false;
+        }
+        this.albums.push(album);
+        return true;
     }
 }
 
 export class Album
 {
 	private name: string;
-	private songs: Song[];
-	private artists: Artist[];
+	private songs: string[];
+	private artists: string[];
 
-	constructor(name: string, songs?: Song[], artists?: Artist[])
+	constructor(name: string, songs?: string[], artists?: string[])
 	{
 		this.name = name;
 		this.songs = songs 		|| [];
 		this.artists = artists 	|| [];
 	}
 
+    static fromJSON(obj:any)
+    {
+        return new Album(obj.name, obj.songs, obj.artists);
+    }
+
     public getName(): string
     {
         return this.name;
     }
 
-	public getArtist(): Artist[]
+	public getArtists(): string[]
 	{
 		return this.artists;
 	}
 
+	public getSongs(): string[]
+	{
+		return this.songs;
+	}
+
+/*
 	public setArtist(artists: Artist[])
 	{
 		this.artists = artists;
@@ -171,9 +273,15 @@ export class Album
 	{
 		this.artists.push(artist);
 	}
-
-    public addSong(song: Song)
+*/
+    public addSongHash(song: string): boolean
     {
+        if(includes(this.songs, song))
+        {
+            return false;
+        }
+
         this.songs.push(song);
+        return true;
     }
 }
