@@ -88,6 +88,13 @@ export class Song
 		this.encoding = encoding|| null;
 	}
 
+    static fromJSON(obj:any)
+    {
+        return new Song(obj.title, obj.genre, obj.year, obj.duration,
+                        obj.artists, obj.album, obj.magnet, null,
+                        obj.fileName, obj.encoding);
+    }
+
 	private getEncodingFromFilename()
 	{
 		// If encoding is not set, get from filename if valid
@@ -146,12 +153,12 @@ export class Song
 	{
 		return this.duration;
 	}
-/*
-	public getArtist(): Artist[]
+
+	public getArtists(): string[]
 	{
 		return this.artists;
 	}
-
+/*
 	public setArtist(artists: Artist[])
 	{
 		this.artists = artists;
@@ -161,12 +168,12 @@ export class Song
 	{
 		this.artists.push(artist);
 	}
-
-	public getAlbum() : Album
+*/
+	public getAlbum() : string
 	{
 		return this.album;
 	}
-
+/*
 	public setAlbum(album: Album)
 	{
 		this.album = album;
@@ -208,6 +215,11 @@ export class Artist
         return this.name;
     }
 
+    public getAlbums(): string[]
+    {
+        return this.albums;
+    }
+
     public addAlbumHash(album: string): boolean
     {
         if(includes(this.albums, album))
@@ -241,12 +253,18 @@ export class Album
     {
         return this.name;
     }
-/*
-	public getArtist(): Artist[]
+
+	public getArtists(): string[]
 	{
 		return this.artists;
 	}
 
+	public getSongs(): string[]
+	{
+		return this.songs;
+	}
+
+/*
 	public setArtist(artists: Artist[])
 	{
 		this.artists = artists;
