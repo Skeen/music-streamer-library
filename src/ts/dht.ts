@@ -1,11 +1,4 @@
-// calculate sha1 hash of input string
-function sha1(input:string) : string
-{
-    var crypto = require('crypto');
-    var shasum = crypto.createHash('sha1');
-    shasum.update(input);
-    return shasum.digest('hex');
-}
+import { sha1 } from './sha1';
 
 export interface HashTableCallback
 {
