@@ -57,7 +57,7 @@ export class Song
 
 	// Song belongs to:
 	private artists: Artist[];
-	private albums: Album[];
+	private album: Album;
 
 	// Finding this song in the net
 	private magnet: string;
@@ -70,17 +70,16 @@ export class Song
 	// duration should be in milliseconds.
 	constructor(title: string, genre?: string, 
 				year?: number, dur?: number,
-				artists?: Artist[], albums?: Album[],
-				magnet?: string,
-			   	buffer?: Buffer, 
-				fileName?: string, encoding?: string)
+				artists?: Artist[], album?: Album,
+				magnet?: string, buffer?: Buffer, 
+				fileName?: string, encoding?: string)	
 	{
 		this.title = title;
 		this.genre = genre 		|| null;
 		this.year = year 		|| null;
 		this.duration = dur		|| null;
 		this.artists = artists 	|| [];
-		this.albums = albums 	|| [];
+		this.album = album 	    || null;
 		this.magnet = magnet	|| null;
 		this.buffer = buffer	|| null;
 		this.fileName = fileName|| null;
@@ -161,19 +160,14 @@ export class Song
 		this.artists.push(artist);
 	}
 
-	public getAlbums() : Album[]
+	public getAlbum() : Album
 	{
-		return this.albums;
+		return this.album;
 	}
 
-	public setAlbum(albums: Album[])
+	public setAlbum(album: Album)
 	{
-		this.albums = albums;
-	}
-
-	public addAlbum(album: Album)
-	{
-		this.albums.push(album);
+		this.album = album;
 	}
 
 	public getMagnet(): string
@@ -200,6 +194,11 @@ export class Artist
 		//this.songs = songs 	|| [];
 		this.albums = albums|| [];
 	}
+
+    public getName(): string
+    {
+        return this.name;
+    }
 }
 
 export class Album
@@ -214,4 +213,29 @@ export class Album
 		this.songs = songs 		|| [];
 		this.artists = artists 	|| [];
 	}
+
+    public getName(): string
+    {
+        return this.name;
+    }
+
+	public getArtist(): Artist[]
+	{
+		return this.artists;
+	}
+
+	public setArtist(artists: Artist[])
+	{
+		this.artists = artists;
+	}
+
+	public addArtist(artist: Artist)
+	{
+		this.artists.push(artist);
+	}
+
+    public addSong(song: Song)
+    {
+        this.songs.push(song);
+    }
 }

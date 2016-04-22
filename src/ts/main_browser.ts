@@ -5,6 +5,8 @@ var mm = require('musicmetadata')
 var client = new WebTorrent()
 
 import { HashTable, HTTP_HashTable } from "./dht";
+import { sha1 } from './sha1';
+import { addSong } from './dht_overlay';
 
 // TODO: Replace by 'new Distributed_HashTable();'
 var hash_table:HashTable = new HTTP_HashTable();
@@ -57,36 +59,6 @@ function onTorrent (torrent:any) {
             if (err) throw err;
             log(JSON.stringify(metadata, null, 4));
         });
-
-        /* // Works, but wraps stream with another stream
-        var Stream = require('stream');
-         
-        var src = new Stream();
-        src.readable = true;
-        var parser = mm(src, function(err:any, metadata:any)
-        {
-            if (err) throw err;
-            log(JSON.stringify(metadata, null, 4));
-        });
-
-        var readable = file.createReadStream();
-        readable.on('data', (chunk:any) => {
-            src.emit('data', chunk);
-            console.log('got %d bytes of data', chunk.length);
-        });
-        */
-
-        /* // Works, but emitting only when entire file is downloaded
-        file.getBuffer(function (err:any, buffer:any) {
-            if (err) throw err;
-            var blob = new Blob([ buffer ], { type: 'application/octet-binary' });
-            var parser = mm(blob, function(err:any, metadata:any)
-            {
-                if (err) throw err;
-                log(JSON.stringify(metadata, null, 4));
-            });
-        });
-        */
     })
 }
 
@@ -113,7 +85,10 @@ document.querySelector('#search').addEventListener('submit', function (e) {
             log("Unable to query overlay network: " + err.message);
             return;
         }
+
         log("Found value: " + value);
+        console.log(JSON.stringify(JSON.parse(value), null, 4));
+
     });
 });
 
@@ -135,25 +110,18 @@ dragDrop('#droparea', function (files:any) {
     {
         client.seed(file, function (torrent:any)
         {
-            print_torrent(torrent);
-            hash_table.put(file.name, torrent.magnetURI, function(err, value)
+            var parser = mm(file, function(err:any, metadata:any)
             {
-                if(err)
-                {
-                    log("Unable to store in overlay network: " + err.message);
-                    return;
-                }
-                log("Stored in overlay network: " + value);
+                if (err) throw err;
+                log(JSON.stringify(metadata, null, 4));
+
+                addSong(metadata, torrent.magnetURI, hash_table, log);
             });
+
+            print_torrent(torrent);
         });
-        var parser = mm(file, function(err:any, metadata:any)
-                {
-                    if (err) throw err;
-                    log(JSON.stringify(metadata, null, 4));
-                });
     });
 })
-
 
 function log (str:any) {
     var p = document.createElement('p')
