@@ -89,8 +89,8 @@ var dht_lookup = function(hash:string)
         handle_lookup(value);
     });
 }
-// TODO: Fix compilation error
-window['dht_lookup'] = dht_lookup;
+var browser_window:any = window;
+browser_window['dht_lookup'] = dht_lookup;
 
 var download_torrent = function(magnetURI:string)
 {
@@ -99,8 +99,7 @@ var download_torrent = function(magnetURI:string)
 	// 	and torrent is ready to be downloaded
     client.add(magnetURI, onTorrent);
 }
-// TODO: Fix compilation error
-window['download_torrent'] = download_torrent;
+browser_window['download_torrent'] = download_torrent;
 
 function handle_lookup(value:any)
 {
