@@ -11,6 +11,9 @@ import { addSong } from './dht_overlay';
 // TODO: Replace by 'new Distributed_HashTable();'
 var hash_table:HashTable = new HTTP_HashTable();
 
+
+var browser_start = function()
+{
 client.on('error', function (err:any) {
     console.error('ERROR: ' + err.message)
 })
@@ -130,4 +133,7 @@ function log (str:any) {
 }
 
 //log("A");
+}
 
+var browser_window:any = window;
+browser_window['browser_start'] = browser_start;

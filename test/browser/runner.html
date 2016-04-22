@@ -8,12 +8,15 @@
     </head>
     <body>
         <!-- TODO: Test stuff from inside the bundle! -->
-        <!-- <script src="../../dist/js/bundle.js"></script> -->
+        <script src="../../dist/js/bundle.js"></script>
         <script src="../../node_modules/should/should.js"></script> 
-        <script src="../../node_modules/mocha/mocha.js"></script> 
-        <script>mocha.setup('bdd')</script> 
-        <script src="runner.js"></script> 
-        <script>
+        <script src="../../node_modules/mocha/mocha.js"></script>
+		<script src="../../dist/js/bundle.js"></script> 
+        <script>mocha.setup('bdd')</script>
+        <script src="runner.js"></script>
+		<script>
+			var dht = new dst();
+			dht.get('abba', true);
             mocha.run();
         </script> 
     </body>

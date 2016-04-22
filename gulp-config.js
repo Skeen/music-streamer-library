@@ -37,7 +37,7 @@ module.exports = {
     sources: {
       statics: 'src/statics/*.{html,js,css}',
       typescript: ['src/ts/*.ts', 'typings/main.d.ts'],
-      browserify: ts_tmp + 'main_browser.js',
+      browserify: ts_tmp + 'chord-dht.js',
       desktop: ts_tmp + 'main.js'
     },
     destinations: {
