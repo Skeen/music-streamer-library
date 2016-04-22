@@ -127,13 +127,14 @@ export class Song
 export class Artist
 {
 	private name: string;
-	private songs: Song[];
+	//private songs: Song[];
 	private albums: Album[];
 
-	constructor(name: string, songs?: Song[], albums?: Album[])
+	//constructor(name: string, songs?: Song[], albums?: Album[])
+	constructor(name: string, albums?: Album[])
 	{
 		this.name = name;
-		this.songs = songs 	|| [];
+		//this.songs = songs 	|| [];
 		this.albums = albums|| [];
 	}
 }
