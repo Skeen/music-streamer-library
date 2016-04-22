@@ -10,8 +10,10 @@ export interface HashTable
 {
     // Put a keyset into the HashTable, callback when done
     put(key:string, value:string, callback?:HashTableCallback) : void;
+    put_raw(hash:string, value:string, callback?:HashTableCallback) : void;
     // Get a value from the HashTable, callback when done
     get(key:string, callback?:HashTableCallback) : void;
+    get_raw(hash:string, callback?:HashTableCallback) : void;
 }
 
 // Fake distributed HashTable via. centralized server
