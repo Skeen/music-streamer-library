@@ -1,6 +1,7 @@
 var WebTorrent = require('webtorrent')
 var dragDrop = require('drag-drop')
 var mm = require('musicmetadata')
+var render = require('render-media')
 
 var client = new WebTorrent()
 
@@ -42,26 +43,45 @@ function onTorrent (torrent:any) {
     })
 
     // Render all files into to the page
-    torrent.files.forEach(function (file:any) {
-        file.renderTo('media_player');
-        log('(Blob URLs only work if the file is loaded from a server. "http//localhost" works.'
-			+ '"file://" does not.)');
-        file.getBlobURL(function (err:any, url:any)
-        {
-            if (err)
-            {
-                return log(err.message);
-            }
-            log('File done.');
-            log('<a href="' + url + '">Download full file: ' + file.name + '</a>');
-        });
+	torrent.files.forEach(handleMusicStream);
+}
 
-        var parser = mm(file.createReadStream(), {assumeStream: true}, function(err:any, metadata:any)
-        {
-            if (err) throw err;
-            log(JSON.stringify(metadata, null, 4));
-        });
-    })
+function handleMusicStream(file:any)
+{
+	var stream = file.createReadStream();
+
+	render.render(file, '.media_player', 
+		function(err:any, elem:any)
+		{
+			if (err) throw err;
+			console.log(elem);
+		});
+
+	//file.appendTo('player');
+	log('(Blob URLs only work if the file is loaded from a server.'
+		+ '"http//localhost" works.' 
+		+ '"file://" does not.)');
+	file.getBlobURL(
+		function(err:any, url:any)
+		{
+			if (err)
+			{
+				return log(err.message);
+			}
+			log('File done.');
+			log('<a href="' + url 
+				+ '">Download full file: ' 
+				+ file.name + '</a>');
+
+		});
+
+	var parser = mm(stream, {assumeStream: true}, 
+		function(err:any, metadata:any)
+		{
+			if (err) throw err;
+			log(JSON.stringify(metadata, null, 4));
+		});
+
 }
 
 // Event to download torrent when user clicks button, use text input field.
