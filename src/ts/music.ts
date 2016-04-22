@@ -13,6 +13,7 @@ function songToRenderable(song: Song)
 				var end = opts.end;
 			}
 		}
+	return file;
 }
 
 export class Playlist
