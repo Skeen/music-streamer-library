@@ -90,7 +90,7 @@ export class Song
     static fromJSON(obj:any)
     {
         return new Song(obj.title, obj.genre, obj.year, obj.duration,
-                        obj.artists, obj.album, obj.magnet, null,
+                        obj.artists, obj.album, obj.magnet, obj.buffer,
                         obj.fileName, obj.encoding);
     }
 
@@ -112,6 +112,11 @@ export class Song
 	{
 		return this.fileName;
 	}
+
+    public setFileName(fileName: string) : string
+    {
+        this.fileName = fileName;
+    }
 
 	public getBuffer() : Buffer
 	{

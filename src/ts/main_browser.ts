@@ -1,12 +1,13 @@
 var WebTorrent = require('webtorrent')
 var dragDrop = require('drag-drop')
 var mm = require('musicmetadata')
+var localForage = require('localforage');
 
 var client = new WebTorrent()
 
 import { HashTable, HTTP_HashTable } from "./dht";
 import { sha1 } from './sha1';
-import { addSong } from './dht_overlay';
+import { createSong, addSong } from './dht_overlay';
 import { Song, Album, Artist } from './music';
 
 // TODO: Replace by 'new Distributed_HashTable();'
@@ -16,7 +17,7 @@ client.on('error', function (err:any) {
     console.error('ERROR: ' + err.message)
 })
 
-function print_torrent(torrent:any)
+function print_torrent(torrent:any, query?:string)
 {
     log('<b>' + torrent.name + '</b>' +
             '<ul>' +
@@ -24,7 +25,7 @@ function print_torrent(torrent:any)
             '<li> <a href="' + torrent.magnetURI + '" target="_blank">[Magnet URI]</a></li>' +
             '<li> <a href="' + torrent.torrentFileBlobURL + '" target="_blank" download="' + torrent.name + '.torrent">[Download .torrent]</a></li>' +
             '</ul>'
-       );
+       , query);
 }
 
 function onTorrent (torrent:any) {
@@ -43,7 +44,7 @@ function onTorrent (torrent:any) {
 
     // Render all files into to the page
     torrent.files.forEach(function (file:any) {
-        file.renderTo('player');
+        file.appendTo('.player');
         log('(Blob URLs only work if the file is loaded from a server. "http//localhost" works.'
 			+ '"file://" does not.)');
         file.getBlobURL(function (err:any, url:any)
@@ -60,6 +61,20 @@ function onTorrent (torrent:any) {
         {
             if (err) throw err;
             log(JSON.stringify(metadata, null, 4));
+
+            file.getBuffer(function(err:any, buffer:any)
+            {
+                if (err) throw err;
+
+                var song:Song = createSong(metadata, torrent.magnetURI);
+                song.setBuffer(buffer);
+                song.setFileName(file.name);
+                localForage.setItem(sha1(song.getTitle()), song, function(err:any)
+                {
+                    if (err) throw err;
+                    log("Added song to localForage!");
+                });
+            })
         });
     })
 }
@@ -203,6 +218,38 @@ document.querySelector('#search').addEventListener('submit', function (e) {
     });
 });
 
+// TODO: Use iterate instead
+localForage.keys(function(err:any, keys:any)
+{
+    if(err) throw err;
+
+    console.log(keys);
+
+    for(var key in keys)
+    {
+        var lookup_key = keys[key];
+        localForage.getItem(lookup_key, function(err:any, value:any)
+        {
+            if(err) throw err;
+
+            var song:Song = Song.fromJSON(value);
+
+            var buffer:any = new Buffer(song.getBuffer());
+            buffer.name = song.getFileName();
+
+            client.seed(buffer, function(torrent:any)
+            {
+                torrent.on('wire', function(wire:any, addr:any)
+                {
+                    log('connected to peer with address ' + addr)
+                });
+
+                print_torrent(torrent, ".local");
+            });           
+        });
+    }
+});
+
 // When user drops files on the browser, create a new torrent and start seeding it!
 dragDrop('#droparea', function (files:any) {
     log('User dropped file(s):');
@@ -221,6 +268,11 @@ dragDrop('#droparea', function (files:any) {
     {
         client.seed(file, function (torrent:any)
         {
+            torrent.on('wire', function(wire:any, addr:any)
+            {
+                log('connected to peer with address ' + addr)
+            });
+
             var parser = mm(file, function(err:any, metadata:any)
             {
                 if (err) throw err;
@@ -234,10 +286,17 @@ dragDrop('#droparea', function (files:any) {
     });
 })
 
-function log (str:any) {
-    var p = document.createElement('p')
-        p.innerHTML = str
-        document.querySelector('.log').appendChild(p)
+function log (str:any, query?:string) {
+    var p = document.createElement('p');
+    p.innerHTML = str;
+    if(query)
+    {
+        document.querySelector(query).appendChild(p);
+    }
+    else
+    {
+        document.querySelector('.log').appendChild(p);
+    }
 }
 
 //log("A");

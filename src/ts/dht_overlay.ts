@@ -50,16 +50,21 @@ var replacer = function(key:string, value:any)
 }
 */
 
-export function addSong(metadata : any, magnetURI : string, hash_table : HashTable, log:any)
+export function createSong(metadata: any, magnetURI: any) : Song
 {
-    // TODO: Test if song is in DHT
     var artist_hashes:string[] = [];
     for(var key in metadata.artist)
     {
         var artist = metadata.artist[key];
         artist_hashes.push(sha1(artist));
     }
-    var song = new Song(metadata.title, JSON.stringify(metadata.genre), metadata.year, metadata.duration, artist_hashes, sha1(metadata.album), magnetURI);
+    return new Song(metadata.title, JSON.stringify(metadata.genre), metadata.year, metadata.duration, artist_hashes, sha1(metadata.album), magnetURI);
+}
+
+export function addSong(metadata : any, magnetURI : string, hash_table : HashTable, log:any)
+{
+    // TODO: Test if song is in DHT
+    var song:Song = createSong(metadata, magnetURI);
 
     hash_table.put(song.getTitle(), JSON.stringify({type: "song", payload: song}), function(err, value)
     {

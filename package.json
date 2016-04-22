@@ -37,6 +37,7 @@
     "array-includes": "^3.0.2",
     "cli-color": "^1.1.0",
     "drag-drop": "^2.11.0",
+    "localforage": "^1.4.0",
     "musicmetadata": "^2.0.2",
     "render-media": "^2.5.0",
     "request": "^2.71.0",
