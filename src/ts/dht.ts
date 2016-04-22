@@ -1,3 +1,5 @@
+/// <reference path="./sha1.ts"/>
+
 import { sha1 } from './sha1';
 
 export interface HashTableCallback
@@ -90,9 +92,49 @@ export class HTTP_HashTable implements HashTable
         this.get_raw(hash_key, callback);
     }
 }
-/*
-class Distributed_HashTable implements HashTable
+
+var explorer = require('webrtc-explorer');
+
+export class Distributed_HashTable implements HashTable
 {
-// TODO: Implement
+  private config : any;
+  private peer : any;
+
+  constructor()
+  {
+    var config = {
+    signalingURL: 'http://localhost:3000',
+    logging: true
+    };
+
+    var peer = new explorer(config);
+
+    //Do we need a global peer?
+    //peerGlobal = peer;
+
+    peer.events.on('registered', function(data: any) {
+      console.log('registered with Id:', data.peerId);
+    });
+
+    peer.events.on('ready', function() {
+      console.log('ready to send messages'); 
+    });
+
+    peer.events.on('message', function(envelope : any) {
+      console.log(envelope);
+    });
+
+    peer.register();
+
+  }
+   put(key:string, value:string, callback?:(err?:any, value?:string) => void) : void
+  {
+
+  }
+  get(key:string, callback?:(err?:any, value?:string) => void) : void
+  {
+  }
+  //TODO: Implement
+  //console.log('start');
 }
-*/
+

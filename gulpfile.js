@@ -28,7 +28,7 @@ gulp.task('node:rerun', false, node.run);
 gulp.task('node:run', "Run cli", ['typescript:compile'], node.run);
 gulp.task('node:watch', ['typescript:watch'], node.watch);
 
-gulp.task('test:local', ['browserify:compile'], test.local);
+gulp.task('test:local', ['typescript:compile'], test.local);
 gulp.task('test:browser', ['browserify:compile'], test.browser);
 
 // Accumulative tasks
