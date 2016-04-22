@@ -63,11 +63,14 @@ function onTorrent (torrent:any) {
     })
 }
 
+// Event to download torrent when user clicks button, use text input field.
 document.querySelector('#magnet').addEventListener('submit', function (e) {
     e.preventDefault() // Prevent page refresh
 
+	// Get torrent magnet from text input field.
     var element:any = document.querySelector('#magnet input[name=torrentId]');
     var torrentId = element.value
+
     download_torrent(torrentId);
 });
 
@@ -91,6 +94,8 @@ window['dht_lookup'] = dht_lookup;
 var download_torrent = function(magnetURI:string)
 {
     log('Adding ' + magnetURI);
+	// Callback when torrentId metadata has been retrieved,
+	// 	and torrent is ready to be downloaded
     client.add(magnetURI, onTorrent);
 }
 // TODO: Fix compilation error
@@ -178,6 +183,7 @@ function handle_lookup(value:any)
     }
 }
 
+// Event to search for a file in the CMS, using input from text input field.
 document.querySelector('#search').addEventListener('submit', function (e) {
     e.preventDefault() // Prevent page refresh
 
