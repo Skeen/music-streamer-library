@@ -9,14 +9,14 @@ var client = new WebTorrent()
 import { HashTable, HTTP_HashTable } from "./dht";
 import { sha1 } from './sha1';
 import { createSong, addSong } from './dht_overlay';
-import { Song, Album, Artist } from './music';
+import { bufferToRenderable, Song, Album, Artist } from './music';
 
 // TODO: Replace by 'new Distributed_HashTable();'
 var hash_table:HashTable = new HTTP_HashTable();
 
-
 var browser_start = function()
 {
+
 client.on('error', function (err:any) {
     console.error('ERROR: ' + err.message)
 })
@@ -138,6 +138,28 @@ var download_torrent = function(magnetURI:string)
 }
 browser_window['download_torrent'] = download_torrent;
 
+var play_song = function(lookup_key:string)
+{
+    log('Playing: ' + lookup_key);
+
+    localForage.getItem(lookup_key, function(err:any, value:any)
+    {
+        if(err) throw err;
+
+        var song:Song = Song.fromJSON(value);
+
+        var file = bufferToRenderable(song);
+
+        render.render(file, '.media_player', 
+            function(err:any, elem:any)
+            {
+                if (err) throw err;
+                console.log(elem);
+            });
+    });
+}
+browser_window['play_song'] = play_song;
+
 function handle_lookup(value:any)
 {
     //log("Found value: " + value);
@@ -240,6 +262,56 @@ document.querySelector('#search').addEventListener('submit', function (e) {
     });
 });
 
+// Avoid lookup_key
+function song_printer(song:Song, lookup_key:string, query?:string)
+{
+    var output = "<b>" + song.getTitle() + "</b> - ";
+    
+    if(song.hasBuffer())
+    {
+        output += '<a onclick="play_song(' + "'" + lookup_key + "'" + ');" href="javascript:void(0);">' + "Play Now" + '</a><br>';
+    }
+    else
+    {
+        output += '<a onclick="download_torrent(' + "'" + song.getMagnet() + "'" + ');" href="javascript:void(0);">' + "Play Now" + '</a><br>';
+    }
+
+    output += '<ul>';
+    output += '<li>';
+    output += "Genre: " + song.getGenre() + "<br>";
+    output += '</li>';
+
+    output += '<li>';
+    output += "Year: " + song.getYear() + "<br>";
+    output += '</li>';
+
+    output += '<li>';
+    output += "Duration: " + song.getDuration() + "<br>";
+    output += '</li>';
+
+    output += '<li>';
+    output += "Artists: <br>";
+    var list = '<ul>';
+    song.getArtists().forEach(function(artist:string)
+    {
+        list += '<li>';
+        list += '<a onclick="dht_lookup(' + "'" + artist + "'" + ');" href="javascript:void(0);">' + artist + '</a>';
+        list += '</li>';
+    });
+    list += '</ul>';
+    output += list;
+    output += '</li>';
+
+    output += '<li>';
+    output += "Album: " + '<a onclick="dht_lookup(' + "'" + song.getAlbum() + "'" + ');" href="javascript:void(0);">' + song.getAlbum() + '</a><br>';
+    output += '</li>';
+    output += '<li>';
+    output += "MagnetURI: " + '<a href="' + song.getMagnet() + '" target="_blank">[Magnet URI]</a>';
+    output += '</li>';
+
+    log(output, query);
+}
+
 // TODO: Use iterate instead
 localForage.keys(function(err:any, keys:any)
 {
@@ -249,26 +321,28 @@ localForage.keys(function(err:any, keys:any)
 
     for(var key in keys)
     {
-        var lookup_key = keys[key];
-        localForage.getItem(lookup_key, function(err:any, value:any)
-        {
-            if(err) throw err;
-
-            var song:Song = Song.fromJSON(value);
-
-            var buffer:any = new Buffer(song.getBuffer());
-            buffer.name = song.getFileName();
-
-            client.seed(buffer, function(torrent:any)
+        (function(lookup_key:string)
+         {
+            localForage.getItem(lookup_key, function(err:any, value:any)
             {
-                torrent.on('wire', function(wire:any, addr:any)
-                {
-                    log('connected to peer with address ' + addr)
-                });
+                if(err) throw err;
 
-                print_torrent(torrent, ".local");
-            });           
-        });
+                var song:Song = Song.fromJSON(value);
+
+                var buffer:any = new Buffer(song.getBuffer());
+                buffer.name = song.getFileName();
+
+                client.seed(buffer, function(torrent:any)
+                {
+                    torrent.on('wire', function(wire:any, addr:any)
+                    {
+                        log('connected to peer with address ' + addr)
+                    });
+
+                    song_printer(song, lookup_key, ".local");
+                });           
+            });
+         })(keys[key]);
     }
 });
 

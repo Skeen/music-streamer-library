@@ -1,19 +1,27 @@
 var buffer = require('buffer');
 var includes = require('array-includes');
+var stream = require('stream');
 
-function bufferToRenderable(song: Song)
+export function bufferToRenderable(song: Song)
 {
-	var sFileName: string = song.getFileName();
-	var file =
-		{
-			name: sFileName,
-			createReadStream: function(opts: any)
-			{
-				var start = opts.start;
-				var end = opts.end;
-			}
-		}
-	return file;
+	var filename: string = song.getFileName();
+    var buffer:any = new Buffer(song.getBuffer());
+
+	var file = {
+        name: filename,
+        createReadStream: function(opts: any)
+        {
+            // TODO: Handle opts
+            if (!opts) opts = {}
+
+            //var new_buffer = from([ buffer.slice(opts.start || 0, opts.end || (buffer.length - 1)) ])
+            var bufferStream = new stream.PassThrough();
+            bufferStream.end(buffer);
+
+            return bufferStream;
+        }
+    }
+    return file;
 }
 
 export class Playlist
@@ -116,6 +124,11 @@ export class Song
     public setFileName(fileName: string) : void
     {
         this.fileName = fileName;
+    }
+
+    public hasBuffer() : boolean
+    {
+        return this.buffer !== null;
     }
 
 	public getBuffer() : Buffer
