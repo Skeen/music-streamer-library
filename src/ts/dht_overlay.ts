@@ -71,7 +71,7 @@ export function addSong(metadata : any, magnetURI : string, hash_table : HashTab
         log("Stored in overlay network: " + value);
     });
 
-    // Albums
+    // Album
     hash_table.get(metadata.album, function(err, value)
     {
         var album_artist_hashes:string[] = [];
