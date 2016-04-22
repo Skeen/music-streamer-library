@@ -93,48 +93,9 @@ export class HTTP_HashTable implements HashTable
     }
 }
 
-var explorer = require('webrtc-explorer');
-
+/*
 export class Distributed_HashTable implements HashTable
 {
-  private config : any;
-  private peer : any;
-
-  constructor()
-  {
-    var config = {
-    signalingURL: 'http://localhost:3000',
-    logging: true
-    };
-
-    var peer = new explorer(config);
-
-    //Do we need a global peer?
-    //peerGlobal = peer;
-
-    peer.events.on('registered', function(data: any) {
-      console.log('registered with Id:', data.peerId);
-    });
-
-    peer.events.on('ready', function() {
-      console.log('ready to send messages'); 
-    });
-
-    peer.events.on('message', function(envelope : any) {
-      console.log(envelope);
-    });
-
-    peer.register();
-
-  }
-   put(key:string, value:string, callback?:(err?:any, value?:string) => void) : void
-  {
-
-  }
-  get(key:string, callback?:(err?:any, value?:string) => void) : void
-  {
-  }
-  //TODO: Implement
-  //console.log('start');
+// TODO: See chord-dht.ts
 }
-
+*/
