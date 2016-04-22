@@ -47,10 +47,10 @@ function onTorrent (torrent:any) {
     })
 
     // Render all files into to the page
-	torrent.files.forEach(handleMusicStream);
+	torrent.files.forEach(handleMusicStream, torrent.magnetURI);
 }
 
-function handleMusicStream(file:any)
+function handleMusicStream(file:any, magnetURI:string)
 {
 	var stream = file.createReadStream();
 
@@ -89,7 +89,7 @@ function handleMusicStream(file:any)
             {
                 if (err) throw err;
 
-                var song:Song = createSong(metadata, torrent.magnetURI);
+                var song:Song = createSong(metadata, magnetURI);
                 song.setBuffer(buffer);
                 song.setFileName(file.name);
                 localForage.setItem(sha1(song.getTitle()), song, function(err:any)

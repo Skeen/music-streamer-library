@@ -113,7 +113,7 @@ export class Song
 		return this.fileName;
 	}
 
-    public setFileName(fileName: string) : string
+    public setFileName(fileName: string) : void
     {
         this.fileName = fileName;
     }
