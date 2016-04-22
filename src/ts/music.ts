@@ -1,4 +1,19 @@
 var buffer = require('buffer');
+var render = require('render-media');
+
+function songToRenderable(song: Song)
+{
+	var sFileName: string = song.getFileName();
+	var file =
+		{
+			name: sFileName,
+			createReadStream: function(opts: any)
+			{
+				var start = opts.start;
+				var end = opts.end;
+			}
+		}
+}
 
 export class Playlist
 {
@@ -46,13 +61,19 @@ export class Song
 
 	// Finding this song in the net
 	private magnet: string;
+
+	// Data and filetype
 	private buffer: Buffer;
-	
+	private fileName: string;
+	private encoding: string;
+
 	// duration should be in milliseconds.
 	constructor(title: string, genre?: string, 
 				year?: number, dur?: number,
 				artists?: Artist[], albums?: Album[],
-				magnet?: string)
+				magnet?: string,
+			   	buffer?: Buffer, 
+				fileName?: string, encoding?: string)
 	{
 		this.title = title;
 		this.genre = genre 		|| null;
@@ -61,6 +82,48 @@ export class Song
 		this.artists = artists 	|| [];
 		this.albums = albums 	|| [];
 		this.magnet = magnet	|| null;
+		this.buffer = buffer	|| null;
+		this.fileName = fileName|| null;
+		this.encoding = encoding|| null;
+	}
+
+	private getEncodingFromFilename()
+	{
+		// If encoding is not set, get from filename if valid
+		if(this.encoding == null && this.fileName != null)
+		{
+			var fnSplit = this.fileName.split('.');
+			var fileExt = fnSplit.pop();
+			if(fileExt == '.wav' || '.aac' || '.ogg' || '.oga')
+			{
+				this.encoding = fileExt;
+			}
+		}
+	}
+
+	public getFileName() : string
+	{
+		return this.fileName;
+	}
+
+	public getBuffer() : Buffer
+	{
+		return this.buffer;
+	}
+
+	public setBuffer(buffer: Buffer)
+	{
+		this.buffer = buffer;
+	}
+
+	public getEncoding() : string
+	{
+		return this.encoding;
+	}
+
+	public setEncoding(enc: string)
+	{
+		this.encoding = enc;
 	}
 
 	public getTitle() : string
