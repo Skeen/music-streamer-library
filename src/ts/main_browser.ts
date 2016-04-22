@@ -43,7 +43,7 @@ function onTorrent (torrent:any) {
 
     // Render all files into to the page
     torrent.files.forEach(function (file:any) {
-        file.renderTo('player');
+        file.renderTo('media_player');
         log('(Blob URLs only work if the file is loaded from a server. "http//localhost" works.'
 			+ '"file://" does not.)');
         file.getBlobURL(function (err:any, url:any)
