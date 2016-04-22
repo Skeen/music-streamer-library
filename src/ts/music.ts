@@ -1,8 +1,7 @@
 var buffer = require('buffer');
 var includes = require('array-includes');
-var render = require('render-media');
 
-function songToRenderable(song: Song)
+function bufferToRenderable(song: Song)
 {
 	var sFileName: string = song.getFileName();
 	var file =

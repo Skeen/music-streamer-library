@@ -34,7 +34,7 @@ function onTorrent (torrent:any) {
     // Print out progress every 5 seconds
     var interval = setInterval(function () {
         log('Progress: ' + (torrent.progress * 100).toFixed(1) + '%');
-    }, 5000)
+    	}, 5000)
 
     torrent.on('done', function () {
         log('Progress: 100%');
@@ -43,8 +43,9 @@ function onTorrent (torrent:any) {
 
     // Render all files into to the page
     torrent.files.forEach(function (file:any) {
-        file.appendTo('.log');
-        log('(Blob URLs only work if the file is loaded from a server. "http//localhost" works. "file://" does not.)');
+        file.renderTo('player');
+        log('(Blob URLs only work if the file is loaded from a server. "http//localhost" works.'
+			+ '"file://" does not.)');
         file.getBlobURL(function (err:any, url:any)
         {
             if (err)
