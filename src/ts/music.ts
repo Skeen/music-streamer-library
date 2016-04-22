@@ -1,4 +1,5 @@
 var buffer = require('buffer');
+var includes = require('array-includes');
 
 export class Playlist
 {
@@ -40,9 +41,9 @@ export class Song
 	private year: number;
 	private duration: number;
 
-	// Song belongs to:
-	private artists: Artist[];
-	private album: Album;
+	// Song belongs to: (hashes)
+	private artists: string[];
+	private album: string;
 
 	// Finding this song in the net
 	private magnet: string;
@@ -51,7 +52,7 @@ export class Song
 	// duration should be in milliseconds.
 	constructor(title: string, genre?: string, 
 				year?: number, dur?: number,
-				artists?: Artist[], album?: Album,
+				artists?: string[], album?: string,
 				magnet?: string)
 	{
 		this.title = title;
@@ -82,7 +83,7 @@ export class Song
 	{
 		return this.duration;
 	}
-
+/*
 	public getArtist(): Artist[]
 	{
 		return this.artists;
@@ -107,6 +108,7 @@ export class Song
 	{
 		this.album = album;
 	}
+    */
 
 	public getMagnet(): string
 	{
@@ -123,40 +125,60 @@ export class Artist
 {
 	private name: string;
 	//private songs: Song[];
-	private albums: Album[];
+	private albums: string[];
 
 	//constructor(name: string, songs?: Song[], albums?: Album[])
-	constructor(name: string, albums?: Album[])
+	constructor(name: string, albums?: string[])
 	{
 		this.name = name;
 		//this.songs = songs 	|| [];
 		this.albums = albums|| [];
 	}
 
+    static fromJSON(obj:any)
+    {
+        return new Artist(obj.name, obj.albums);
+    }
+
     public getName(): string
     {
         return this.name;
+    }
+
+    public addAlbumHash(album: string): boolean
+    {
+        if(includes(this.albums, album))
+        {
+            return false;
+        }
+        this.albums.push(album);
+        return true;
     }
 }
 
 export class Album
 {
 	private name: string;
-	private songs: Song[];
-	private artists: Artist[];
+	private songs: string[];
+	private artists: string[];
 
-	constructor(name: string, songs?: Song[], artists?: Artist[])
+	constructor(name: string, songs?: string[], artists?: string[])
 	{
 		this.name = name;
 		this.songs = songs 		|| [];
 		this.artists = artists 	|| [];
 	}
 
+    static fromJSON(obj:any)
+    {
+        return new Album(obj.name, obj.songs, obj.artists);
+    }
+
     public getName(): string
     {
         return this.name;
     }
-
+/*
 	public getArtist(): Artist[]
 	{
 		return this.artists;
@@ -171,9 +193,15 @@ export class Album
 	{
 		this.artists.push(artist);
 	}
-
-    public addSong(song: Song)
+*/
+    public addSongHash(song: string): boolean
     {
+        if(includes(this.songs, song))
+        {
+            return false;
+        }
+
         this.songs.push(song);
+        return true;
     }
 }
