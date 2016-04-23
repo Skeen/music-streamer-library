@@ -337,22 +337,15 @@ localForage.keys(function(err:any, keys:any)
                     console.log(song);
                     console.log(buffer_value);
 
-                    var buffer:any = new Buffer('123');/*toBuffer(buffer_value, function (err:any, buffer:any)*/
+                    client.seed(buffer_value, function(torrent:any)
                     {
-                        if (err) throw err;
-
-                        buffer.name = song.getFileName();
-
-                        client.seed(buffer, function(torrent:any)
+                        torrent.on('wire', function(wire:any, addr:any)
                         {
-                            torrent.on('wire', function(wire:any, addr:any)
-                            {
-                                log('connected to peer with address ' + addr)
-                            });
+                            log('connected to peer with address ' + addr)
+                        });
 
-                            song_printer(song, lookup_key, ".local");
-                        });           
-                    });
+                        song_printer(song, lookup_key, ".local");
+                    });           
                 });
             });
          })(lookup_key);
