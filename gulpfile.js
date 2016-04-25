@@ -8,6 +8,7 @@ var statics     = require('./build-tasks/statics');
 var browserify  = require('./build-tasks/browserify');
 var clean       = require('./build-tasks/clean');
 var node        = require('./build-tasks/node');
+var test        = require('./build-tasks/test');
 
 // Sub-tasks
 gulp.task('server:reload', "Reload the attached browsers", server.reload);
@@ -27,6 +28,9 @@ gulp.task('node:rerun', false, node.run);
 gulp.task('node:run', "Run cli", ['typescript:compile'], node.run);
 gulp.task('node:watch', ['typescript:watch'], node.watch);
 
+gulp.task('test:local', ['typescript:compile'], test.local);
+gulp.task('test:browser', ['browserify:compile'], test.browser);
+
 // Accumulative tasks
 gulp.task('compile', "Compile everything", [
     'statics:compile',
@@ -42,6 +46,8 @@ gulp.task('watch', false, [
 
 gulp.task('clean', "Cleans up the build environment", clean.clean);
 
+gulp.task('build', "Compile and watch for changes", ['compile', 'watch']);
+
 gulp.task('serve', "Compile and serve the project", ['server:serve']);
 
 gulp.task('browser', "Serve project watching for changes", ['serve', 'watch']);
@@ -49,3 +55,5 @@ gulp.task('browser', "Serve project watching for changes", ['serve', 'watch']);
 gulp.task('desktop', "Run cli and watch for changes", ['node:run', 'node:watch']);
 
 gulp.task('default', ["browser"]);
+
+gulp.task('test', ["test:local", "test:browser"]);

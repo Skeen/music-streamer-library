@@ -15,7 +15,7 @@ var assign = require('lodash.assign');
 
 // add custom browserify options here
 var b_opts = assign({}, watchify.args, opts.browserify);
-var bundler = watchify(browserify(b_opts).add(src.browserify)); 
+var bundler = browserify(b_opts).add(src.browserify); 
 
 // Output build logs to the gulp terminal
 bundler.on('log', gutil.log);
@@ -41,6 +41,7 @@ var compile = bundle;
 // Incremental compilation
 var watch = function()
 {
+    bundler = watchify(bundler);
     // Whenever one of the bundle dependencies change, rebundle
     bundler.on('update', function()
     {
