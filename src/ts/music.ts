@@ -1,11 +1,9 @@
 var buffer = require('buffer');
 var includes = require('array-includes');
-var stream = require('stream');
 
-export function bufferToRenderable(song: Song)
+export function bufferToRenderable(song: Song, stream:any)
 {
 	var filename: string = song.getFileName();
-    var buffer:any = new Buffer(song.getBuffer());
 
 	var file = {
         name: filename,
@@ -13,12 +11,7 @@ export function bufferToRenderable(song: Song)
         {
             // TODO: Handle opts
             if (!opts) opts = {}
-
-            //var new_buffer = from([ buffer.slice(opts.start || 0, opts.end || (buffer.length - 1)) ])
-            var bufferStream = new stream.PassThrough();
-            bufferStream.end(buffer);
-
-            return bufferStream;
+            return stream;
         }
     }
     return file;

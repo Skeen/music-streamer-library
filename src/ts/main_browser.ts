@@ -5,6 +5,7 @@ var localForage = require('localforage');
 var render = require('render-media')
 var toBuffer = require('blob-to-buffer')
 require('string.prototype.startswith');
+var ReadableBlobStream = require('readable-blob-stream');
 
 var client = new WebTorrent()
 
@@ -97,7 +98,7 @@ function handleMusicStream(file:any, magnetURI:string)
                 localForage.setItem(sha1(song.getTitle()), song, function(err:any)
                 {
                     if (err) throw err;
-                    log("Added song to localForage!");
+                    log("Added song metadata to localForage!");
                 });
 
                 function toArrayBuffer(buffer:any) {
@@ -112,7 +113,7 @@ function handleMusicStream(file:any, magnetURI:string)
                 localForage.setItem("storage:" + sha1(song.getTitle()), new Blob([toArrayBuffer(buffer)]), function(err:any)
                 {
                     if (err) throw err;
-                    log("Added song to localForage!");
+                    log("Added song binary data to localForage!");
                 });
             });
 		});
@@ -159,20 +160,25 @@ var play_song = function(lookup_key:string)
 {
     log('Playing: ' + lookup_key);
 
-    localForage.getItem(lookup_key, function(err:any, value:any)
+    localForage.getItem(lookup_key, function(err:any, song_value:any)
     {
         if(err) throw err;
 
-        var song:Song = Song.fromJSON(value);
 
-        var file = bufferToRenderable(song);
+        localForage.getItem("storage:" + lookup_key, function(err:any, buffer_value:any)
+        {
+            if(err) throw err;
 
-        render.render(file, '.media_player', 
-            function(err:any, elem:any)
-            {
-                if (err) throw err;
-                console.log(elem);
-            });
+            var song:Song = Song.fromJSON(song_value);
+            var file = bufferToRenderable(song, new ReadableBlobStream(buffer_value));
+
+            render.render(file, '.media_player', 
+                function(err:any, elem:any)
+                {
+                    if (err) throw err;
+                    console.log(elem);
+                });
+        });
     });
 }
 browser_window['play_song'] = play_song;
@@ -263,7 +269,7 @@ function song_printer(song:Song, lookup_key?:string, query?:string)
 {
     var output = "<b>" + song.getTitle() + "</b> - ";
     
-    if(song.hasBuffer())
+    if(lookup_key)
     {
         output += '<a onclick="play_song(' + "'" + lookup_key + "'" + ');" href="javascript:void(0);">' + "Play Now" + '</a><br>';
     }
@@ -390,13 +396,13 @@ dragDrop('#droparea', function (files:any) {
                 localForage.setItem(sha1(song.getTitle()), song, function(err:any)
                 {
                     if (err) throw err;
-                    log("Added song to localForage!");
+                    log("Added song metadata to localForage!");
                 });
 
                 localForage.setItem("storage:" + sha1(song.getTitle()), new Blob([file]), function(err:any)
                 {
                     if (err) throw err;
-                    log("Added song to localForage!");
+                    log("Added song binary data to localForage!");
                 });
             });
 
@@ -423,10 +429,4 @@ function log (str:any, query?:string) {
 
 var browser_window:any = window;
 browser_window['browser_start'] = browser_start;
-
-localForage.getItem("storage", function(err:any, value:any)
-{
-    if (err) throw err;
-    console.log(value);
-});
 
