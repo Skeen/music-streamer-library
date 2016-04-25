@@ -320,7 +320,7 @@ Storage.getKeys(function(err:any, keys:string[])
                 if(err) throw err;
 
                 var blob:Blob = song.getBlob();
-
+				console.log(blob);
                 client.seed(blob, function(torrent:any)
                 {
                     torrent.on('wire', function(wire:any, addr:any)
@@ -402,6 +402,8 @@ function log (str:any, query?:string) {
 
 //log("A");
 }
+
+
 
 var browser_window:any = window;
 browser_window['browser_start'] = browser_start;

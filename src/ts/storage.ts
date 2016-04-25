@@ -54,8 +54,8 @@ export class Storage
 				else
 				{
 					var song:Song = Song.fromJSON(song_value);
-					Storage.getBlob(hash, song,
-							function(err:any, song:Song){callback(err, song)});
+					Storage.getBlob(hash, song, callback);
+							//function(err:any, song:Song){callback(err, song)});
 				}
 			});
 	}
@@ -69,7 +69,7 @@ export class Storage
 			// var filtered_keys: string[] = filter.filter(keys, 'storage');
 			var filtered_keys: string[] = keys.filter(function(key:any)
 													  {
-													  	return key.startsWith('storage:');
+													  	return !key.startsWith('storage:');
 													  });
     		callback(err, filtered_keys);
 		});
