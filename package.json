@@ -38,6 +38,8 @@
     "cli-color": "^1.1.0",
     "drag-drop": "^2.11.0",
     "localforage": "^1.4.0",
+    "lodash.filter": "^4.3.0",
+    "lodash.startswith": "^4.0.1",
     "musicmetadata": "^2.0.2",
     "readable-blob-stream": "^1.1.0",
     "render-media": "^2.5.0",

@@ -108,6 +108,7 @@ function handleMusicStream(file:any, magnetURI:string)
                 Storage.addSong(song, function(err:any, sha1:string)
                 {
                     if(err) throw err;
+					log('Added song to storage!');
                     // TODO: Handle this event
                 });
             });
@@ -374,6 +375,9 @@ dragDrop('#droparea', function (files:any) {
                 Storage.addSong(song, function(err:any, sha1:string)
                 {
                     if (err) throw err;
+					
+					log('Added song to storage!');
+
                     // TODO: Handle this event
                 });
             });

@@ -1,4 +1,5 @@
-var localForage = require('localForage');
+var localForage = require('localforage');
+var filter = require('lodash.filter');
 
 export interface storageAddCallback
 {
@@ -12,14 +13,15 @@ export interface storageGetCallback
 
 export interface storageKeysCallback
 {
-	(error?:any, keys:string[]): void;
+	(error?:any, keys?:string[]): void;
 }
 
 import {Song, Album, Artist} from './music';
+import {sha1} from './sha1';
 
-export public class Storage
+export class Storage
 {
-	public static addSong(song: Song, callback:storageAddCallback): string
+	public static addSong(song: Song, callback:storageAddCallback): void
 	{
 		var hash:string = sha1(song.getTitle());
 
@@ -34,14 +36,13 @@ export public class Storage
 				}
 				else
 				{
-					log("Added song info to localForage!");
-					saveBlob(hash, blob, 
+					Storage.saveBlob(hash, blob, 
 							 function(err:any, hash:string){callback(err, hash)});
 				}
 			});
 	}
 
-	public static getSong(hash: string, callback:storageGetCallback): Song
+	public static getSong(hash: string, callback:storageGetCallback): void
 	{
 		localForage.getItem(hash, function(err:any, song_value:any)
 			{
@@ -52,28 +53,24 @@ export public class Storage
 				else
 				{
 					var song:Song = Song.fromJSON(song_value);
-					log("Fetched song info from localForage!");
-					getBlob(hash, song,
+					Storage.getBlob(hash, song,
 							function(err:any, song:Song){callback(err, song)});
 				}
 			});
 	}
 
-	public static getKeys(callback:storageKeysCallback)
+	public static getKeys(callback:storageKeysCallback) : void
 	{
 		localForage.keys(function(err:any, keys:string[])
 		{
     		if(err) throw err;
-
-		    var filtered_keys: string[] = keys.filter(function(key: string)
-											{
-												return key.startsWith('storage');
-											})
+			
+			var filtered_keys: string[] = filter.filter(keys, 'storage');
     		callback(err, filtered_keys);
 		});
 	}
 
-	private static saveBlob(hash:string, blob: Blob, callback:storageAddCallback): string
+	private static saveBlob(hash:string, blob: Blob, callback:storageAddCallback): void
 	{
 		localForage.setItem('storage:'+hash, blob, function(err:any)
 			{
@@ -83,13 +80,12 @@ export public class Storage
 				}
 				else
 				{
-					log("Added song blob to localForage!")
 					callback(err, hash);
 				}
 			});
 	}
 	
-	private static getBlob(hash:string, song:Song, callback:any): Blob
+	private static getBlob(hash:string, song:Song, callback:any): void
 	{
 		localForage.getItem("storage:"+hash, function(err:any, blob:Blob)
 			{
@@ -100,7 +96,6 @@ export public class Storage
 				else
 				{
 					song.setBlob(blob);
-					log("Fetched song blon from localForage!");
 					callback(err, song);
 				}
 			});
