@@ -76,7 +76,7 @@ export class Song
 	constructor(title: string, genre?: string, 
 				year?: number, dur?: number,
 				artists?: string[], album?: string,
-				magnet?: string, buffer?: Buffer, 
+				magnet?: string, blob?: Blob, 
 				fileName?: string, encoding?: string)	
 	{
 		this.title = title;
@@ -86,7 +86,7 @@ export class Song
 		this.artists = artists 	|| [];
 		this.album = album 	    || null;
 		this.magnet = magnet	|| null;
-		this.buffer = buffer	|| null;
+		this.blob = blob		|| null;
 		this.fileName = fileName|| null;
 		this.encoding = encoding|| null;
 	}
@@ -94,7 +94,7 @@ export class Song
     static fromJSON(obj:any)
     {
         return new Song(obj.title, obj.genre, obj.year, obj.duration,
-                        obj.artists, obj.album, obj.magnet, obj.buffer,
+                        obj.artists, obj.album, obj.magnet, obj.blob,
                         obj.fileName, obj.encoding);
     }
 
@@ -122,19 +122,19 @@ export class Song
         this.fileName = fileName;
     }
 
-    public hasBuffer() : boolean
+    public hasBlob() : boolean
     {
-        return this.buffer !== null;
+        return this.blob !== null;
     }
 
-	public getBuffer() : Buffer
+	public getBlob() : Blob
 	{
-		return this.buffer;
+		return this.blob;
 	}
 
-	public setBuffer(buffer: Buffer)
+	public setBlob(blob: Blob)
 	{
-		this.buffer = buffer;
+		this.blob = blob;
 	}
 
 	public getEncoding() : string
