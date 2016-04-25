@@ -1,5 +1,6 @@
 var localForage = require('localforage');
-var filter = require('lodash.filter');
+//var filter = require('lodash.filter');
+require('string.prototype.startswith');
 
 export interface storageAddCallback
 {
@@ -65,7 +66,11 @@ export class Storage
 		{
     		if(err) throw err;
 			
-			var filtered_keys: string[] = filter.filter(keys, 'storage');
+			// var filtered_keys: string[] = filter.filter(keys, 'storage');
+			var filtered_keys: string[] = keys.filter(function(key:any)
+													  {
+													  	return key.startsWith('storage:');
+													  });
     		callback(err, filtered_keys);
 		});
 	}
