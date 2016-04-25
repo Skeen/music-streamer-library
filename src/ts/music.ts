@@ -1,9 +1,12 @@
 var buffer = require('buffer');
 var includes = require('array-includes');
+var ReadableBlobStream = require('readable-blob-stream');
 
-export function bufferToRenderable(song: Song, stream:any)
+export function bufferToRenderable(song: Song)
 {
 	var filename: string = song.getFileName();
+    var blob: Blob = song.getBlob();
+    var stream: string = new ReadableBlobStream(blob);
 
 	var file = {
         name: filename,

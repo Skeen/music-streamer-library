@@ -1,11 +1,9 @@
 var WebTorrent = require('webtorrent')
 var dragDrop = require('drag-drop')
 var mm = require('musicmetadata')
-var localForage = require('localforage');
 var render = require('render-media')
 var toBuffer = require('blob-to-buffer')
 require('string.prototype.startswith');
-var ReadableBlobStream = require('readable-blob-stream');
 
 var client = new WebTorrent()
 
@@ -13,6 +11,7 @@ import { HashTable, HTTP_HashTable } from "./dht";
 import { sha1 } from './sha1';
 import { createSong, addSong } from './dht_overlay';
 import { bufferToRenderable, Song, Album, Artist } from './music';
+import { Storage } from './storage';
 
 // TODO: Replace by 'new Distributed_HashTable();'
 var hash_table:HashTable = new HTTP_HashTable();
@@ -92,16 +91,8 @@ function handleMusicStream(file:any, magnetURI:string)
             {
                 if (err) throw err;
 
-                var song:Song = createSong(metadata, magnetURI);
-                song.setFileName(file.name);
-
-                localForage.setItem(sha1(song.getTitle()), song, function(err:any)
+                function toArrayBuffer(buffer:any)
                 {
-                    if (err) throw err;
-                    log("Added song metadata to localForage!");
-                });
-
-                function toArrayBuffer(buffer:any) {
                     var ab = new ArrayBuffer(buffer.length);
                     var view = new Uint8Array(ab);
                     for (var i = 0; i < buffer.length; ++i) {
@@ -110,10 +101,14 @@ function handleMusicStream(file:any, magnetURI:string)
                     return ab;
                 }
 
-                localForage.setItem("storage:" + sha1(song.getTitle()), new Blob([toArrayBuffer(buffer)]), function(err:any)
+                var song:Song = createSong(metadata, magnetURI);
+                song.setFileName(file.name);
+                song.setBlob(new Blob([toArrayBuffer(buffer)]));
+
+                Storage.addSong(song, function(err:any, sha1:string)
                 {
-                    if (err) throw err;
-                    log("Added song binary data to localForage!");
+                    if(err) throw err;
+                    // TODO: Handle this event
                 });
             });
 		});
@@ -160,25 +155,18 @@ var play_song = function(lookup_key:string)
 {
     log('Playing: ' + lookup_key);
 
-    localForage.getItem(lookup_key, function(err:any, song_value:any)
+    Storage.getSong(lookup_key, function(err:any, song:Song)
     {
         if(err) throw err;
 
+        var file = bufferToRenderable(song);
 
-        localForage.getItem("storage:" + lookup_key, function(err:any, buffer_value:any)
-        {
-            if(err) throw err;
-
-            var song:Song = Song.fromJSON(song_value);
-            var file = bufferToRenderable(song, new ReadableBlobStream(buffer_value));
-
-            render.render(file, '.media_player', 
-                function(err:any, elem:any)
-                {
-                    if (err) throw err;
-                    console.log(elem);
-                });
-        });
+        render.render(file, '.media_player', 
+            function(err:any, elem:any)
+            {
+                if (err) throw err;
+                console.log(elem);
+            });
     });
 }
 browser_window['play_song'] = play_song;
@@ -315,7 +303,7 @@ function song_printer(song:Song, lookup_key?:string, query?:string)
 }
 
 // TODO: Use iterate instead
-localForage.keys(function(err:any, keys:any)
+Storage.getKeys(function(err:any, keys:string[])
 {
     if(err) throw err;
 
@@ -324,35 +312,23 @@ localForage.keys(function(err:any, keys:any)
     for(var key in keys)
     {
         var lookup_key = keys[key];
-        if(lookup_key.startsWith("storage:"))
-        {
-            continue;
-        }
-
         (function(lookup_key:string)
          {
-            localForage.getItem(lookup_key, function(err:any, song_value:any)
+            Storage.getSong(lookup_key, function(err:any, song:Song)
             {
                 if(err) throw err;
 
-                localForage.getItem("storage:" + lookup_key, function(err:any, buffer_value:any)
+                var blob:Blob = song.getBlob();
+
+                client.seed(blob, function(torrent:any)
                 {
-                    if(err) throw err;
-
-                    var song:Song = Song.fromJSON(song_value);
-                    console.log(song);
-                    console.log(buffer_value);
-
-                    client.seed(buffer_value, function(torrent:any)
+                    torrent.on('wire', function(wire:any, addr:any)
                     {
-                        torrent.on('wire', function(wire:any, addr:any)
-                        {
-                            log('connected to peer with address ' + addr)
-                        });
+                        log('connected to peer with address ' + addr)
+                    });
 
-                        song_printer(song, lookup_key, ".local");
-                    });           
-                });
+                    song_printer(song, lookup_key, ".local");
+                });           
             });
          })(lookup_key);
     }
@@ -388,21 +364,17 @@ dragDrop('#droparea', function (files:any) {
 
                 addSong(metadata, torrent.magnetURI, hash_table, log);
 
-                console.log(file);
+                //console.log(file);
+                //console.log(torrent.magnetURI);
 
                 var song:Song = createSong(metadata, torrent.magnetURI);
                 song.setFileName(file.name);
+                song.setBlob(file);
 
-                localForage.setItem(sha1(song.getTitle()), song, function(err:any)
+                Storage.addSong(song, function(err:any, sha1:string)
                 {
                     if (err) throw err;
-                    log("Added song metadata to localForage!");
-                });
-
-                localForage.setItem("storage:" + sha1(song.getTitle()), new Blob([file]), function(err:any)
-                {
-                    if (err) throw err;
-                    log("Added song binary data to localForage!");
+                    // TODO: Handle this event
                 });
             });
 
