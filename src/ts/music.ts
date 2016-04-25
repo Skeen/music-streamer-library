@@ -65,7 +65,7 @@ export class Song
 	private magnet: string;
 
 	// Data and filetype
-	private buffer: Buffer;
+	private blob: Blob;
 	private fileName: string;
 	private encoding: string;
 
