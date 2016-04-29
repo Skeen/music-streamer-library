@@ -2,6 +2,11 @@ var WebTorrent = require('webtorrent');
 
 var client = new WebTorrent();
 
+client.on('error', function(err:any)
+{
+	console.error('ERROR: ' + err.message);
+});
+
 export interface Log
 {
 	(print: string) : void;
@@ -19,8 +24,8 @@ export interface printTorrent
 
 export interface StreamCallback
 {
-	//TODO: Is this type correct? Unsure what is used in WebTorrent.
-	(stream:any) : void;
+	//TODO: What is type? Unsure what is used in WebTorrent.
+	(stream:any, magnetURI:string) : void;
 }
 
 export class TorrentClient
@@ -74,11 +79,11 @@ export class TorrentClient
 				}
 
 				// Return the stream of downloading files via callback.
-				torrent.files.forEach(callback);
+				torrent.files.forEach(callback, magnetURI);
 			});
 	}
 
-	public static seed_torrent(song: Blob, log?: Log, logT?: LogTorrent)
+	public static seed_torrent(song: Blob, log?: Log, logT?: LogTorrent, callback?:any)
 	{
 		client.seed(song, function(torrent:any)
 			{
@@ -95,6 +100,10 @@ export class TorrentClient
 					{
 						log('connected to peer with address ' + addr);
 					});
+				}
+				if(callback)
+				{
+					callback(torrent);
 				}
 			});
 	}

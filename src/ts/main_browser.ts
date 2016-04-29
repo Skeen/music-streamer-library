@@ -1,18 +1,16 @@
-var WebTorrent = require('webtorrent')
 var dragDrop = require('drag-drop')
 var mm = require('musicmetadata')
 var render = require('render-media')
 var toBuffer = require('blob-to-buffer')
 require('string.prototype.startswith');
 
-var client = new WebTorrent()
 
 import { HashTable, HTTP_HashTable } from "./dht";
 import { sha1 } from './sha1';
 import { createSong, addSong } from './dht_overlay';
 import { bufferToRenderable, Song, Album, Artist } from './music';
 import { Storage } from './storage';
-import { TorrentClient } from './torrent.ts';
+import { TorrentClient } from './torrent';
 
 // TODO: Replace by 'new Distributed_HashTable();'
 var hash_table:HashTable = new HTTP_HashTable();
@@ -20,37 +18,20 @@ var hash_table:HashTable = new HTTP_HashTable();
 var browser_start = function()
 {
 
-client.on('error', function (err:any) {
-    console.error('ERROR: ' + err.message)
-})
-
 function print_torrent(torrent:any, query?:string)
 {
-    log('<b>' + torrent.name + '</b>' +
-            '<ul>' +
-            '<li> hash: ' + torrent.infoHash + '</li> ' +
-            '<li> <a href="' + torrent.magnetURI + '" target="_blank">[Magnet URI]</a></li>' +
-            '<li> <a href="' + torrent.torrentFileBlobURL + '" target="_blank" download="' + torrent.name + '.torrent">[Download .torrent]</a></li>' +
-            '</ul>'
-       , query);
+	torrent_to_html(torrent.name, torrent.infoHash, torrent.magnetURI, torrent.torrentFileBlobURL, query);
 }
 
-function onTorrent (torrent:any) {
-    log('Got torrent metadata!');
-    print_torrent(torrent);
-
-    // Print out progress every 5 seconds
-    var interval = setInterval(function () {
-        log('Progress: ' + (torrent.progress * 100).toFixed(1) + '%');
-    	}, 5000)
-
-    torrent.on('done', function () {
-        log('Progress: 100%');
-        clearInterval(interval);
-    })
-
-    // Render all files into to the page
-	torrent.files.forEach(handleMusicStream, torrent.magnetURI);
+function torrent_to_html(name:string, info:string, magnet:string, blobURL:string, query?:string)
+{
+	log('<b>' + name + '</b>' +
+            '<ul>' +
+            '<li> hash: ' + info + '</li> ' +
+            '<li> <a href="' + magnet + '" target="_blank">[Magnet URI]</a></li>' +
+            '<li> <a href="' + blobURL + '" target="_blank" download="' + name + '.torrent">[Download .torrent]</a></li>' +
+            '</ul>'
+       , query);
 }
 
 function handleMusicStream(file:any, magnetURI:string)
@@ -124,7 +105,8 @@ document.querySelector('#magnet').addEventListener('submit', function (e) {
     var element:any = document.querySelector('#magnet input[name=torrentId]');
     var torrentId = element.value
 
-    download_torrent(torrentId);
+    TorrentClient.download_song(torrentId, handleMusicStream,
+								log,null,torrent_to_html);
 });
 
 var dht_lookup = function(hash:string)
@@ -141,6 +123,7 @@ var dht_lookup = function(hash:string)
         handle_lookup(value);
     });
 }
+
 var browser_window:any = window;
 browser_window['dht_lookup'] = dht_lookup;
 
@@ -149,7 +132,8 @@ var download_torrent = function(magnetURI:string)
     log('Adding ' + magnetURI);
 	// Callback when torrentId metadata has been retrieved,
 	// 	and torrent is ready to be downloaded
-    client.add(magnetURI, onTorrent);
+	TorrentClient.download_song(magnetURI, handleMusicStream,
+							   log,null,torrent_to_html);
 }
 browser_window['download_torrent'] = download_torrent;
 
@@ -322,15 +306,8 @@ Storage.getKeys(function(err:any, keys:string[])
 
                 var blob:Blob = song.getBlob();
 				console.log(blob);
-                client.seed(blob, function(torrent:any)
-                {
-                    torrent.on('wire', function(wire:any, addr:any)
-                    {
-                        log('connected to peer with address ' + addr)
-                    });
 
-                    song_printer(song, lookup_key, ".local");
-                });           
+				TorrentClient.seed_torrent(blob, log, null, song_printer(song, lookup_key, ".local"));        
             });
          })(lookup_key);
     }
@@ -352,13 +329,8 @@ dragDrop('#droparea', function (files:any) {
     log("Starting to seed them!");
     files.forEach(function (file:any)
     {
-        client.seed(file, function (torrent:any)
+		TorrentClient.seed_torrent(file, log, null, function (torrent:any)
         {
-            torrent.on('wire', function(wire:any, addr:any)
-            {
-                log('connected to peer with address ' + addr)
-            });
-
             var parser = mm(file, function(err:any, metadata:any)
             {
                 if (err) throw err;
