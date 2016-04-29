@@ -12,6 +12,7 @@ import { sha1 } from './sha1';
 import { createSong, addSong } from './dht_overlay';
 import { bufferToRenderable, Song, Album, Artist } from './music';
 import { Storage } from './storage';
+import { TorrentClient } from './torrent.ts';
 
 // TODO: Replace by 'new Distributed_HashTable();'
 var hash_table:HashTable = new HTTP_HashTable();
