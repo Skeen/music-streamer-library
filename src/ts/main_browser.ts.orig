@@ -17,13 +17,26 @@ var hash_table:HashTable = new HTTP_HashTable();
 var badHealthList: string[] = [];
 var browser_start = function() {
 
+<<<<<<< HEAD
+    client.on('error', function(err: any) {
+        console.error('ERROR: ' + err.message)
+    })
+
     function print_torrent(torrent: any, query?: string) {
+        log('<b>' + torrent.name + '</b>' +
+=======
+var browser_start = function()
+{
+
+function print_torrent(torrent:any, query?:string)
+{
 	torrent_to_html(torrent.name, torrent.infoHash, torrent.magnetURI, torrent.torrentFileBlobURL, query);
 }
 
 function torrent_to_html(name:string, info:string, magnet:string, blobURL:string, query?:string)
 {
 	log('<b>' + name + '</b>' +
+>>>>>>> 0522372f008eb88c30982fb812b906b3c09278c3
             '<ul>' +
             '<li> hash: ' + info + '</li> ' +
             '<li> <a href="' + magnet + '" target="_blank">[Magnet URI]</a></li>' +
@@ -32,8 +45,63 @@ function torrent_to_html(name:string, info:string, magnet:string, blobURL:string
             , query);
     }
 
+<<<<<<< HEAD
+    function onTorrent(torrent: any) {
+        log('Got torrent metadata!');
+        print_torrent(torrent);
+
+        // Print out progress every 5 seconds
+        var interval = setInterval(function() {
+            log('Progress: ' + (torrent.progress * 100).toFixed(1) + '%');
+        }, 5000)
+
+        torrent.on('done', function() {
+            log('Progress: 100%');
+            clearInterval(interval);
+        })
+
+        // Render all files into to the page
+        torrent.files.forEach(handleMusicStream, torrent.magnetURI);
+    }
+
     function handleMusicStream(file: any, magnetURI: string) {
         var stream = file.createReadStream();
+=======
+function handleMusicStream(file:any, magnetURI:string)
+{
+	var stream = file.createReadStream();
+
+	render.render(file, '.media_player', 
+		function(err:any, elem:any)
+		{
+			if (err) throw err;
+			console.log(elem);
+		});
+
+	//file.appendTo('player');
+	log('(Blob URLs only work if the file is loaded from a server.'
+		+ '"http//localhost" works.' 
+		+ '"file://" does not.)');
+	file.getBlobURL(
+		function(err:any, url:any)
+		{
+			if (err)
+			{
+				return log(err.message);
+			}
+			log('File done.');
+			log('<a href="' + url 
+				+ '">Download full file: ' 
+				+ file.name + '</a>');
+
+		});
+
+	var parser = mm(stream, {assumeStream: true}, 
+		function(err:any, metadata:any)
+		{
+            if (err) throw err;
+            log(JSON.stringify(metadata, null, 4));
+>>>>>>> 0522372f008eb88c30982fb812b906b3c09278c3
 
         render.render(file, '.media_player',
             function(err: any, elem: any) {
@@ -95,13 +163,19 @@ function torrent_to_html(name:string, info:string, magnet:string, blobURL:string
         var element: any = document.querySelector('#magnet input[name=torrentId]');
         var torrentId = element.value
 
+<<<<<<< HEAD
+        download_torrent(torrentId);
+    });
+=======
     TorrentClient.download_song(torrentId, handleMusicStream,
 								log,null,torrent_to_html);
-    });
+});
+>>>>>>> 0522372f008eb88c30982fb812b906b3c09278c3
 
     var dht_lookup = function(hash: string) {
         log("Looking up in DHT: " + hash);
 
+<<<<<<< HEAD
         hash_table.get_raw(hash, function(err, value) {
             if (err) {
                 log("Unable to query overlay network: " + err.message);
@@ -110,7 +184,6 @@ function torrent_to_html(name:string, info:string, magnet:string, blobURL:string
             handle_lookup(value);
         });
     }
-
     var browser_window: any = window;
     browser_window['dht_lookup'] = dht_lookup;
 
@@ -118,10 +191,34 @@ function torrent_to_html(name:string, info:string, magnet:string, blobURL:string
         log('Adding ' + magnetURI);
         // Callback when torrentId metadata has been retrieved,
         // 	and torrent is ready to be downloaded
-	TorrentClient.download_song(magnetURI, handleMusicStream,
-							   log,null,torrent_to_html);
+        client.add(magnetURI, onTorrent);
     }
     browser_window['download_torrent'] = download_torrent;
+=======
+    hash_table.get_raw(hash, function(err, value)
+    {
+        if(err)
+        {
+            log("Unable to query overlay network: " + err.message);
+            return;
+        }
+        handle_lookup(value);
+    });
+}
+
+var browser_window:any = window;
+browser_window['dht_lookup'] = dht_lookup;
+
+var download_torrent = function(magnetURI:string)
+{
+    log('Adding ' + magnetURI);
+	// Callback when torrentId metadata has been retrieved,
+	// 	and torrent is ready to be downloaded
+	TorrentClient.download_song(magnetURI, handleMusicStream,
+							   log,null,torrent_to_html);
+}
+browser_window['download_torrent'] = download_torrent;
+>>>>>>> 0522372f008eb88c30982fb812b906b3c09278c3
 
     var play_song = function(lookup_key: string) {
         log('Playing: ' + lookup_key);
@@ -272,13 +369,19 @@ function torrent_to_html(name:string, info:string, magnet:string, blobURL:string
 
                     var blob: Blob = song.getBlob();
                     console.log(blob);
+                    client.seed(blob, function(torrent: any) {
+                        torrent.on('wire', function(wire: any, addr: any) {
+                            log('connected to peer with address ' + addr)
+                        });
 
-				TorrentClient.seed_torrent(blob, log, null, song_printer(song, lookup_key, ".local"));        
-            });
+                        song_printer(song, lookup_key, ".local");
+                    });
+                });
             })(lookup_key);
         }
     });
 
+<<<<<<< HEAD
     // When user drops files on the browser, create a new torrent and start seeding it!
     dragDrop('#droparea', function(files: any) {
         log('User dropped file(s):');
@@ -293,7 +396,7 @@ function torrent_to_html(name:string, info:string, magnet:string, blobURL:string
 
         log("Starting to seed them!");
         files.forEach(function(file: any) {
-            TorrentClient.seed_torrent(file, log, null, function(torrent: any) {
+            client.seed(file, function(torrent: any) {
                 badHealthList.push(torrent.magnetURI);
                 hash_table.get("badHealth", function(error?: any, value?: string) {
                     if (error) {
@@ -313,11 +416,59 @@ function torrent_to_html(name:string, info:string, magnet:string, blobURL:string
                         });
                     }
                 });
+                torrent.on('wire', function(wire: any, addr: any) {
+                    log('connected to peer with address ' + addr)
+                });
+
                 var parser = mm(file, function(err: any, metadata: any) {
                     if (err) throw err;
                     //log(JSON.stringify(metadata, null, 4));
 
                     addSong(metadata, torrent.magnetURI, hash_table, log);
+=======
+    console.log(keys);
+
+    for(var key in keys)
+    {
+        var lookup_key = keys[key];
+        (function(lookup_key:string)
+         {
+            Storage.getSong(lookup_key, function(err:any, song:Song)
+            {
+                if(err) throw err;
+
+                var blob:Blob = song.getBlob();
+				console.log(blob);
+
+				TorrentClient.seed_torrent(blob, log, null, song_printer(song, lookup_key, ".local"));        
+            });
+         })(lookup_key);
+    }
+});
+
+// When user drops files on the browser, create a new torrent and start seeding it!
+dragDrop('#droparea', function (files:any) {
+    log('User dropped file(s):');
+    var list = '<ul>';
+    files.forEach(function (file:any)
+    {
+        list += '<li>';
+        list += file.name;
+        list += '</li>';
+    });
+    list += '</ul>';
+    log(list);
+
+    log("Starting to seed them!");
+    files.forEach(function (file:any)
+    {
+		TorrentClient.seed_torrent(file, log, null, function (torrent:any)
+        {
+            var parser = mm(file, function(err:any, metadata:any)
+            {
+                if (err) throw err;
+                //log(JSON.stringify(metadata, null, 4));
+>>>>>>> 0522372f008eb88c30982fb812b906b3c09278c3
 
                     //console.log(file);
                     //console.log(torrent.magnetURI);
