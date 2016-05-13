@@ -1,6 +1,6 @@
 {
   "name": "music-streamer-library",
-  "version": "0.0.4",
+  "version": "0.0.7",
   "description": "A WebTorrent (WebRTC) based music distribution network",
   "main": "dist/index.js",
   "typings": "dist/index",

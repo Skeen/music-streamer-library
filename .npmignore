@@ -4,7 +4,6 @@ npm-debug.log
 *~
 
 build-tasks
-dist
 gulp-config.js
 gulpfile.js
 src
