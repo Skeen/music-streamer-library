@@ -2,25 +2,19 @@
   "name": "music-streamer",
   "version": "1.0.0",
   "description": "A WebTorrent (WebRTC) based music distribution network",
-  "main": "dist/js/bundle.js",
+  "main": "dist/index.js",
+  "typings": "dist/index",
   "scripts": {
-    "test": "gulp test",
-    "start": "gulp",
-    "seeder": "gulp desktop",
-    "tracker": "node ./node_modules/bittorrent-tracker/bin/cmd.js",
+    "start": "gulp lib",
     "postinstall": "typings install; patch -N node_modules/musicmetadata/lib/browser.js musicmetadata.patch"
   },
   "author": "Emil 'Skeen' Madsen",
   "license": "ISC",
   "devDependencies": {
     "bittorrent-tracker": "^8.0.0",
-    "browser-sync": "^2.12.3",
-    "browserify": "^13.0.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-help": "^1.6.1",
-    "gulp-mocha": "^2.2.0",
-    "gulp-mocha-phantomjs": "^0.11.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.0",
     "gulp-util": "^3.0.7",
@@ -30,13 +24,11 @@
     "should": "^8.3.1",
     "tsify": "^0.14.7",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.7.0"
+    "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
     "array-includes": "^3.0.2",
     "cli-color": "^1.1.0",
-    "drag-drop": "^2.11.0",
     "localforage": "^1.4.0",
     "lodash.filter": "^4.3.0",
     "lodash.startswith": "^4.0.1",

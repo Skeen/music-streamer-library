@@ -23,20 +23,12 @@ var compile = function()
                        .pipe(tsc(tsProject));
 
 	return merge([
-		tsResult.dts.pipe(gulp.dest(dest.ts)),
+		tsResult.dts.pipe(gulp.dest(dest.dist)),
         tsResult.js.pipe(sourcemaps.write())
-                   .pipe(gulp.dest(dest.ts))
+                   .pipe(gulp.dest(dest.dist))
     ]);
 }
 
-// Incremental compilation
-var watch = function()
-{
-    // typescript:compile is incremental
-    gulp.watch(src.typescript, ['typescript:compile']);
-};
-
 module.exports = {
-  compile: compile,
-  watch: watch
+  compile: compile
 };
