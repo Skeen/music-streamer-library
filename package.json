@@ -11,24 +11,16 @@
   "author": "Emil 'Skeen' Madsen",
   "license": "ISC",
   "devDependencies": {
-    "bittorrent-tracker": "^8.0.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-help": "^1.6.1",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.0",
-    "gulp-util": "^3.0.7",
     "lodash.assign": "^4.0.8",
-    "merge2": "^1.0.2",
-    "mocha": "^2.4.5",
-    "should": "^8.3.1",
-    "tsify": "^0.14.7",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "merge2": "^1.0.2"
   },
   "dependencies": {
     "array-includes": "^3.0.2",
-    "cli-color": "^1.1.0",
     "localforage": "^1.4.0",
     "lodash.filter": "^4.3.0",
     "lodash.startswith": "^4.0.1",
@@ -37,8 +29,6 @@
     "render-media": "^2.5.0",
     "request": "^2.71.0",
     "string.prototype.startswith": "^0.2.0",
-    "webrtc-explorer": "^1.1.1",
-    "webtorrent": "^0.90.3",
-    "webtorrent-hybrid": "^1.0.2"
+    "webtorrent": "^0.90.3"
   }
 }
