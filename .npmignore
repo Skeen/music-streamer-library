@@ -7,7 +7,5 @@ build-tasks
 dist
 gulp-config.js
 gulpfile.js
-musicmetadata.patch
 src
 typings
-typings.json

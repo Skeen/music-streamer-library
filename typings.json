@@ -1,5 +1,5 @@
 {
-  "name": "music-streamer",
+  "name": "music-streamer-library",
   "version": false,
   "dependencies": {
     "request": "registry:npm/request#2.69.0+20160304121250"
