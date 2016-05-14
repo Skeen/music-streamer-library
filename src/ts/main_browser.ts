@@ -11,10 +11,12 @@ import { createSong, addSong } from './dht_overlay';
 import { bufferToRenderable, Song, Album, Artist } from './music';
 import { Storage } from './storage';
 import { TorrentClient } from './torrent';
+import {Scraper } from './scraper';
 
 // TODO: Replace by 'new Distributed_HashTable();'
 var hash_table:HashTable = new HTTP_HashTable();
 var badHealthList: string[] = [];
+var goodHealth : number = 10;
 var browser_start = function() {
 
     function print_torrent(torrent: any, query?: string) {
@@ -341,6 +343,7 @@ function torrent_to_html(name:string, info:string, magnet:string, blobURL:string
     });
     hash_table.get("badHealth", function(error?: any, value?: string) {
         if (error) {
+            //TODO get new song to seed if song is not badhealth.
             var jsonList : string = JSON.stringify([]);
             hash_table.put("badHealth", jsonList, function() {
                 log('Updated bad health list');
@@ -350,8 +353,19 @@ function torrent_to_html(name:string, info:string, magnet:string, blobURL:string
             //TODO replace any with type info.
             var badHealth: any = JSON.parse(value);
             var seedList = badHealth.length < 5 ? badHealth : getRandom(badHealth, 5);
+            var songSeed: number = 0;
             for (var i = 0; i < seedList.length; i ++)
             {
+                //log('Starting to scrape songs');
+                Scraper.scrape(seedList[i], function(data : any){
+                    songSeed = data.complete;
+                });
+                if(songSeed > goodHealth){
+                    hash_table.put("badHealth", 
+                        badHealth.splice(seedList[i], 1),function() {
+                log('Updated bad health list');
+            });
+                }
                 download_torrent(seedList[i]);
             }
         }
