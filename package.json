@@ -1,9 +1,9 @@
 {
   "name": "music-streamer-library",
-  "version": "0.0.7",
+  "version": "0.0.10",
   "description": "A WebTorrent (WebRTC) based music distribution network",
-  "main": "dist/index.js",
-  "typings": "dist/index",
+  "main": "dist/lib.js",
+  "typings": "dist/lib",
   "scripts": {
     "start": "gulp lib",
     "postinstall": "typings install; patch -N node_modules/musicmetadata/lib/browser.js musicmetadata.patch"
