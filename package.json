@@ -1,12 +1,12 @@
 {
   "name": "music-streamer-library",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A WebTorrent (WebRTC) based music distribution network",
   "main": "dist/lib.js",
   "typings": "dist/lib",
   "scripts": {
     "start": "gulp lib",
-    "postinstall": "typings install; patch -N node_modules/musicmetadata/lib/browser.js musicmetadata.patch"
+    "postinstall": "typings install"
   },
   "author": "Emil 'Skeen' Madsen",
   "license": "ISC",
