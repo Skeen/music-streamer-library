@@ -52,7 +52,7 @@ export class TorrentClient
 
                 if(progress)
                 {
-                    torrent.on('download', function(bytes)
+                    torrent.on('download', function(bytes:number)
                     {
                         progress(bytes, torrent.downloaded, torrent.downloadSpeed, torrent.progress);
                     })
