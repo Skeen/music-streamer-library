@@ -117,6 +117,16 @@ export class Song
 		}
 	}
 
+	public getAlbumName(): string
+	{
+		return this.albumName;
+	}
+
+	public gerArtistNames(): string[]
+	{
+		return this.artistNames;
+	}
+
 	public getFileName() : string
 	{
 		return this.fileName;
