@@ -30,7 +30,7 @@ export interface StreamCallback
 
 export interface ProgressCallback
 {
-	(bytes:number, total_bytes:number, speed:number, progress:number) : void;
+	(speed:number, progress:number, time_left:number) : void;
 }
 
 export class TorrentClient
@@ -54,11 +54,11 @@ export class TorrentClient
                 {
                     torrent.on('download', function(bytes:number)
                     {
-                        progress(bytes, torrent.downloaded, torrent.downloadSpeed, torrent.progress);
+                        progress(torrent.downloadSpeed, torrent.progress, torrent.timeRemaining);
                     })
                     torrent.on('done', function()
                     {
-                        progress(torrent.downloaded, torrent.downloaded, torrent.downloadSpeed, 1);
+                        progress(0, 1, 0);
                     });
                 }
 
