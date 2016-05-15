@@ -74,7 +74,7 @@ export class TorrentClient
         });
 	}
 
-	public static seed_song(song: Blob, logT?:LogTorrent, progress?:ProgressUploadCallback)
+	public static seed_song(song: Blob, logT?:LogTorrent, print?:PrintTorrent, progress?:ProgressUploadCallback)
 	{
 		client.seed(song, function(torrent:any)
         {
@@ -83,6 +83,11 @@ export class TorrentClient
             {
                 console.error("Invariant breached! "
                             + "Torrent contains more than one file.");
+            }
+            if(print) // Allows printing info about the torrent.
+            {
+                print(torrent.name,torrent.infoHash,
+                      torrent.magnetURI,torrent.torrentFileBlobURL);
             }
             if(progress)
             {
