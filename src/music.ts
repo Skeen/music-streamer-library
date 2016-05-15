@@ -59,6 +59,8 @@ export class Song
 	private genre: string;
 	private year: number;
 	private duration: number;
+	private albumName: string;
+	private artistNames: string[];
 
 	// Song belongs to: (hashes)
 	private artists: string[];
@@ -75,20 +77,23 @@ export class Song
 	// duration should be in milliseconds.
 	constructor(title: string, genre?: string, 
 				year?: number, dur?: number,
+				albumName?:string, artistNames?: string[],
 				artists?: string[], album?: string,
 				magnet?: string, blob?: Blob, 
 				fileName?: string, encoding?: string)	
 	{
 		this.title = title;
-		this.genre = genre 		|| null;
-		this.year = year 		|| null;
-		this.duration = dur		|| null;
-		this.artists = artists 	|| [];
-		this.album = album 	    || null;
-		this.magnet = magnet	|| null;
-		this.blob = blob		|| null;
-		this.fileName = fileName|| null;
-		this.encoding = encoding|| null;
+		this.genre = genre 				|| null;
+		this.year = year 				|| null;
+		this.duration = dur				|| null;
+		this.artistNames = artistNames 	|| [];
+		this.artists = artists 			|| [];
+		this.albumName = albumName		|| null;
+		this.album = album 	    		|| null;
+		this.magnet = magnet			|| null;
+		this.blob = blob				|| null;
+		this.fileName = fileName		|| null;
+		this.encoding = encoding		|| null;
 	}
 
     static fromJSON(obj:any)

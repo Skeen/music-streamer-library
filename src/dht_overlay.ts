@@ -58,7 +58,7 @@ export function createSong(metadata: any, magnetURI: any) : Song
         var artist = metadata.artist[key];
         artist_hashes.push(sha1(artist));
     }
-    return new Song(metadata.title, JSON.stringify(metadata.genre), metadata.year, metadata.duration, artist_hashes, sha1(metadata.album), magnetURI);
+    return new Song(metadata.title, JSON.stringify(metadata.genre), metadata.year, metadata.duration, metadata.album, metadata.artist, artist_hashes, sha1(metadata.album), magnetURI);
 }
 
 export function addSong(metadata : any, magnetURI : string, hash_table : HashTable, log:any)
