@@ -84,6 +84,7 @@ export class Song
     static fromJSON(obj:any)
     {
         return new Song(obj.title, obj.genre, obj.year, obj.duration,
+                        obj.albumName, obj.artistNames,
                         obj.artists, obj.album, obj.magnet, obj.blob,
                         obj.fileName, obj.encoding);
     }
