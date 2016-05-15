@@ -109,13 +109,13 @@ export class Song
         var stream: string = new ReadableBlobStream(blob);
 
         var file = {
-        name: filename,
-        createReadStream: function(opts: any)
-        {
-            // TODO: Handle opts
-            if (!opts) opts = {}
-            return stream;
-        }
+            name: filename,
+            createReadStream: function(opts: any)
+            {
+                // TODO: Handle opts
+                if (!opts) opts = {}
+                return stream;
+            }
         }
         return file;
     }
@@ -125,7 +125,7 @@ export class Song
 		return this.albumName;
 	}
 
-	public gerArtistNames(): string[]
+	public getArtistNames(): string[]
 	{
 		return this.artistNames;
 	}
