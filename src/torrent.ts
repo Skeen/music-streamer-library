@@ -28,10 +28,15 @@ export interface StreamCallback
 	(stream:any, magnetURI:string) : void;
 }
 
+export interface ProgressCallback
+{
+	(bytes:number, total_bytes:number, speed:number, progress:number) : void;
+}
+
 export class TorrentClient
 {
 	public static download_song(magnetURI: string, callback: StreamCallback, 
-							log?: Log, logT?: LogTorrent, print?:printTorrent)
+							log?: Log, logT?: LogTorrent, print?:printTorrent, progress?:ProgressCallback)
 	{
 		client.add(magnetURI, function(torrent:any)
 			{
@@ -44,6 +49,18 @@ export class TorrentClient
     				print(torrent.name,torrent.infoHash,
 						  torrent.magnetURI,torrent.torrentFileBlobURL);
 				}
+
+                if(progress)
+                {
+                    torrent.on('download', function(bytes)
+                    {
+                        progress(bytes, torrent.downloaded, torrent.downloadSpeed, torrent.progress);
+                    })
+                    torrent.on('done', function()
+                    {
+                        progress(torrent.downloaded, torrent.downloaded, torrent.downloadSpeed, 1);
+                    });
+                }
 
 				if(logT) // Allows to print however using the torrent.
 				{
