@@ -74,7 +74,7 @@ export class TorrentClient
         });
 	}
 
-	public static seed_torrent(song: Blob, logT?:LogTorrent, progress?:ProgressUploadCallback)
+	public static seed_song(song: Blob, logT?:LogTorrent, progress?:ProgressUploadCallback)
 	{
 		client.seed(song, function(torrent:any)
         {
