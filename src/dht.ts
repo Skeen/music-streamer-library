@@ -26,7 +26,7 @@ export class HTTP_HashTable implements HashTable
     // Centralized server IP
     server_url:string;
 
-    constructor(server_url?=string)
+    constructor(server_url?:string)
     {
         if(server_url)
         {
