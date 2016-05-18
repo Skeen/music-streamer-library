@@ -67,6 +67,12 @@ export class Song
 				magnet?: string, blob?: Blob, 
 				fileName?: string, encoding?: string)	
 	{
+        // TODO: Handle undefinedness properly
+        if(artists && artistNames && artists.length != artistNames.length)
+        {
+            throw "Critical error!";
+        }
+
 		this.title = title;
 		this.genre = genre 				|| null;
 		this.year = year 				|| null;
@@ -255,18 +261,24 @@ export class Artist
 	private name: string;
 	//private songs: Song[];
 	private albums: string[];
+    private albumNames: string[];
 
 	//constructor(name: string, songs?: Song[], albums?: Album[])
-	constructor(name: string, albums?: string[])
+	constructor(name: string, albums?: string[], albumNames?: string[])
 	{
 		this.name = name;
-		//this.songs = songs 	|| [];
-		this.albums = albums|| [];
+        // TODO: Handle undefinedness properly
+        if(albums && albumNames && albums.length != albumNames.length)
+        {
+            throw "Critical error!";
+        }
+		this.albums = albums || [];
+		this.albumNames = albumNames || [];
 	}
 
     static fromJSON(obj:any)
     {
-        return new Artist(obj.name, obj.albums);
+        return new Artist(obj.name, obj.albums, obj.albumNames);
     }
 
     public getName(): string
@@ -279,13 +291,19 @@ export class Artist
         return this.albums;
     }
 
-    public addAlbumHash(album: string): boolean
+    public getAlbumNames(): string[]
     {
-        if(includes(this.albums, album))
+        return this.albumNames;
+    }
+
+    public addAlbum(hash:string, name:string): boolean
+    {
+        if(includes(this.albums, hash))
         {
             return false;
         }
-        this.albums.push(album);
+        this.albums.push(hash);
+        this.albumNames.push(name);
         return true;
     }
 }
@@ -293,19 +311,38 @@ export class Artist
 export class Album
 {
 	private name: string;
-	private songs: string[];
-	private artists: string[];
 
-	constructor(name: string, songs?: string[], artists?: string[])
+	private songs: string[];
+    private songTitles: string[];
+
+	private artists: string[];
+    private artistNames: string[];
+
+	constructor(name: string, songs?: string[], artists?: string[],
+                songTitles?: string[], artistNames?: string[])
 	{
 		this.name = name;
+
+        // TODO: Handle undefinedness properly
+        if(songs && songTitles && songs.length != songTitles.length)
+        {
+            throw "Critical error!";
+        }
 		this.songs = songs 		|| [];
+		this.songTitles = songTitles 		|| [];
+
+        // TODO: Handle undefinedness properly
+        if(artists && artistNames && artists.length != artistNames.length)
+        {
+            throw "Critical error!";
+        }
 		this.artists = artists 	|| [];
+        this.artistNames = artistNames || [];
 	}
 
     static fromJSON(obj:any)
     {
-        return new Album(obj.name, obj.songs, obj.artists);
+        return new Album(obj.name, obj.songs, obj.artists. obj.songTitles, obj.artistNames);
     }
 
     public getName(): string
@@ -318,30 +355,40 @@ export class Album
 		return this.artists;
 	}
 
+    public getArtistNames(): string[]
+    {
+        return this.artistNames;
+    }
+
 	public getSongs(): string[]
 	{
 		return this.songs;
 	}
 
-/*
-	public setArtist(artists: Artist[])
-	{
-		this.artists = artists;
-	}
-
-	public addArtist(artist: Artist)
-	{
-		this.artists.push(artist);
-	}
-*/
-    public addSongHash(song: string): boolean
+    public getSongTitles(): string[]
     {
-        if(includes(this.songs, song))
+        return this.songTitles;
+    }
+
+	public addArtist(hash:string, name:string): boolean
+	{
+        if(includes(this.artists, hash))
         {
             return false;
         }
+        this.artists.push(hash);
+        this.artistNames.push(name);
+        return true;
+	}
 
-        this.songs.push(song);
+    public addSong(hash: string, title:string): boolean
+    {
+        if(includes(this.songs, hash))
+        {
+            return false;
+        }
+        this.songs.push(hash);
+        this.songTitles.push(title);
         return true;
     }
 }
