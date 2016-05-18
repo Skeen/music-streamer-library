@@ -4,3 +4,4 @@ export * from "./music";
 export * from "./sha1";
 export * from "./storage";
 export * from "./torrent";
+export * from "./scraper";
