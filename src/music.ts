@@ -2,24 +2,6 @@ var buffer = require('buffer');
 var includes = require('array-includes');
 var ReadableBlobStream = require('readable-blob-stream');
 
-export function bufferToRenderable(song: Song)
-{
-	var filename: string = song.getFileName();
-    var blob: Blob = song.getBlob();
-    var stream: string = new ReadableBlobStream(blob);
-
-	var file = {
-        name: filename,
-        createReadStream: function(opts: any)
-        {
-            // TODO: Handle opts
-            if (!opts) opts = {}
-            return stream;
-        }
-    }
-    return file;
-}
-
 export class Playlist
 {
 	private name: string;
@@ -74,6 +56,9 @@ export class Song
 	private fileName: string;
 	private encoding: string;
 
+    // Alternative to blob
+    private stream: any;
+
 	// duration should be in milliseconds.
 	constructor(title: string, genre?: string, 
 				year?: number, dur?: number,
@@ -99,6 +84,7 @@ export class Song
     static fromJSON(obj:any)
     {
         return new Song(obj.title, obj.genre, obj.year, obj.duration,
+                        obj.albumName, obj.artistNames,
                         obj.artists, obj.album, obj.magnet, obj.blob,
                         obj.fileName, obj.encoding);
     }
@@ -117,12 +103,30 @@ export class Song
 		}
 	}
 
+    private blobToRenderable()
+    {
+        var filename: string = this.getFileName();
+        var blob: Blob = this.getBlob();
+        var stream: string = new ReadableBlobStream(blob);
+
+        var file = {
+            name: filename,
+            createReadStream: function(opts: any)
+            {
+                // TODO: Handle opts
+                if (!opts) opts = {}
+                return stream;
+            }
+        }
+        return file;
+    }
+
 	public getAlbumName(): string
 	{
 		return this.albumName;
 	}
 
-	public gerArtistNames(): string[]
+	public getArtistNames(): string[]
 	{
 		return this.artistNames;
 	}
@@ -137,9 +141,30 @@ export class Song
         this.fileName = fileName;
     }
 
-    public hasBlob() : boolean
+    public getRenderable() : any
     {
-        return this.blob !== null;
+        if(this.hasBlob())
+        {
+            return this.blobToRenderable();
+        }
+        else if(this.hasStream())
+        {
+            return this.stream;
+        }
+        else
+        {
+            alert("No renderable source!");
+        }
+    }
+
+    private hasBlob() : boolean
+    {
+        return this.blob != undefined;
+    }
+
+    private hasStream() : boolean
+    {
+        return this.stream != undefined;
     }
 
 	public getBlob() : Blob
@@ -147,14 +172,20 @@ export class Song
 		return this.blob;
 	}
 
-	public setBlob(blob: Blob)
+    public setStream(stream:any) : boolean
+    {
+        if(this.hasBlob())
+        {
+            return false;
+        }
+        this.stream = stream;
+        return true;
+    }
+
+	public setBlob(blob: Blob) : void
 	{
 		this.blob = blob;
-	}
-
-	public getEncoding() : string
-	{
-		return this.encoding;
+        this.stream = undefined;
 	}
 
 	public setEncoding(enc: string)

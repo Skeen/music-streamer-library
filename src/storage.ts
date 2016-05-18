@@ -27,9 +27,11 @@ export class Storage
 		var hash:string = sha1(song.getTitle());
 
 		var blob:Blob = song.getBlob();
-		song.setBlob(null);
 
-		localForage.setItem(hash, song, function(err:any)
+        var blobless = Song.fromJSON(song);
+		blobless.setBlob(null);
+        // TODO: Test if we can store a blob inside an object, without massive issues
+		localForage.setItem(hash, blobless, function(err:any)
 			{
 				if (err)
 				{

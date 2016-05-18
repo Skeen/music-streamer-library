@@ -26,10 +26,16 @@ export class HTTP_HashTable implements HashTable
     // Centralized server IP
     server_url:string;
 
-    constructor()
+    constructor(server_url?:string)
     {
-        // TODO: We should take this as an argument
-        this.server_url = 'http://localhost:3000/';
+        if(server_url)
+        {
+            this.server_url = server_url;
+        }
+        else
+        {
+            this.server_url = 'http://localhost:3000/';
+        }
     }
 
     put_raw(hash:string, value:string, callback?:(err?:any, value?:string) => void) : void
