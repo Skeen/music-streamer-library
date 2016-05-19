@@ -264,21 +264,22 @@ export class Artist
     private albumNames: string[];
 
 	//constructor(name: string, songs?: Song[], albums?: Album[])
-	constructor(name: string, albums?: string[], albumNames?: string[])
+	constructor(name: string)
 	{
 		this.name = name;
-        // TODO: Handle undefinedness properly
-        if(albums && albumNames && albums.length != albumNames.length)
-        {
-            throw "Critical error!";
-        }
-		this.albums = albums || [];
-		this.albumNames = albumNames || [];
+		this.albums = [];
+		this.albumNames = [];
 	}
 
     static fromJSON(obj:any)
     {
-        return new Artist(obj.name, obj.albums, obj.albumNames);
+        var artist = new Artist(obj.name);
+        obj.albums.forEach(function(hash:string, i:number)
+        {
+            var name:string = obj.albumNames[i];
+            artist.addAlbum(hash, name);
+        });
+        return artist;
     }
 
     public getName(): string
@@ -318,31 +319,29 @@ export class Album
 	private artists: string[];
     private artistNames: string[];
 
-	constructor(name: string, songs?: string[], artists?: string[],
-                songTitles?: string[], artistNames?: string[])
+	constructor(name: string)
 	{
 		this.name = name;
-
-        // TODO: Handle undefinedness properly
-        if(songs && songTitles && songs.length != songTitles.length)
-        {
-            throw "Critical error!";
-        }
-		this.songs = songs 		|| [];
-		this.songTitles = songTitles 		|| [];
-
-        // TODO: Handle undefinedness properly
-        if(artists && artistNames && artists.length != artistNames.length)
-        {
-            throw "Critical error!";
-        }
-		this.artists = artists 	|| [];
-        this.artistNames = artistNames || [];
+		this.songs = [];
+		this.songTitles = [];
+		this.artists = [];
+        this.artistNames = [];
 	}
 
     static fromJSON(obj:any)
     {
-        return new Album(obj.name, obj.songs, obj.artists. obj.songTitles, obj.artistNames);
+        var album = new Album(obj.name);
+        obj.artists.forEach(function(hash:string, i:number)
+        {
+            var name:string = obj.artistNames[i];
+            album.addArtist(hash, name);
+        });
+        obj.songs.forEach(function(hash:string, i:number)
+        {
+            var title:string = obj.songTitles[i];
+            album.addSong(hash, title);
+        });
+        return album;
     }
 
     public getName(): string
