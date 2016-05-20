@@ -22,7 +22,7 @@ module.exports = {
   paths: {
     base: output,
     sources: {
-      typescript: ['src/*.ts', 'typings/main.d.ts']
+      typescript: ['src/*.ts', 'typings/index.d.ts']
     },
     destinations: {
       dist: output
