@@ -4,7 +4,7 @@
   "dependencies": {
     "request": "registry:npm/request#2.69.0+20160304121250"
   },
-  "ambientDependencies": {
+  "globalDependencies": {
     "node": "registry:dt/node#4.0.0+20160412142033"
   }
 }

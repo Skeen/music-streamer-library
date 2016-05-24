@@ -1,15 +1,8 @@
-/// <reference path="dht.ts"/>
-
 var WebTorrent = require('webtorrent-hybrid');
 var clc = require('cli-color');
 var fs = require('fs');
 
 var client = new WebTorrent()
-
-import { HashTable, HTTP_HashTable } from "./dht";
-
-// TODO: Replace by 'new Distributed_HashTable();'
-var hash_table:HashTable = new HTTP_HashTable();
 
 client.on('error', function (err:any) {
     console.error('ERROR: ' + err.message);
@@ -54,16 +47,6 @@ fs.readdir(path, function(err:any, files:any)
 
                  file_log(file, "Seeding!");
                  file_log(file, "MagnetURI: '" + clc.green(torrent.magnetURI) + "'");
-
-                 hash_table.put(file, torrent.magnetURI, function(err, value)
-                 {
-                     if(err)
-                     {
-                        file_log(file, "Unable to store in overlay network: " + err.message);
-                        return;
-                     }
-                     file_log(file, "Stored in overlay network: " + value);
-                 });
              });
          })(path + file);
     }
