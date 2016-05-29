@@ -24,7 +24,7 @@ module.exports = {
   paths: {
     base: output,
     sources: {
-      typescript: ['src/ts/*.ts', 'typings/main.d.ts'],
+      typescript: ['src/ts/*.ts', 'typings/index.d.ts'],
       desktop: ts_tmp + 'main.js'
     },
     destinations: {
