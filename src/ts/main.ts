@@ -9,48 +9,22 @@ client.on('error', function (err:any) {
     process.exit(1);
 });
 
-var path = process.argv[2];
-console.log("Serving files from: " + path + "\n");
+var hash = process.argv[2];
+console.log("Downloading: " + hash);
 
-var file_log = function(file:string, msg:string)
+client.add(hash, function(torrent:any)
 {
-    console.log('[' + clc.cyan(file) + ']: ' + msg);
-}
-
-fs.readdir(path, function(err:any, files:any)
-{
-    if(err)
+    torrent.files.forEach(function(file:any)
     {
-        console.error('FILE ERROR: ' + err.message);
-        process.exit(1);
-    }
-    for (var i in files)
-    {
-        var file = files[i];
-        console.log(clc.red("*") + " " + clc.cyan(file));
-    }
-    console.log();
-    console.log("Log:");
-    console.log("--------------------------------------------------------------------------------");
+        file.getBuffer(function(err:any, buffer:any)
+        {
+        });
+    });
 
-    for (var i in files)
-    {
-        var file = files[i];
-        (function(file:any)
-         {
-             client.seed(file, function(torrent:any)
-             {
-                 torrent.on('wire', function (wire:any, addr:any)
-                 {
-                     file_log(file, "Connected to peer with address '" + clc.magenta(addr) + "'")
-                 });
-
-                 file_log(file, "Seeding!");
-                 file_log(file, "MagnetURI: '" + clc.green(torrent.magnetURI) + "'");
-             });
-         })(path + file);
-    }
+    torrent.on('done', function(){
+        console.log("DOWNLOADED EVERYTHING, REBOOTING!");
+        client.destroy();
+        process.exit(-1);
+    });
 });
-
-
 
