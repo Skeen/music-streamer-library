@@ -6,7 +6,7 @@
   "typings": "dist/lib",
   "scripts": {
     "start": "gulp lib",
-    "postinstall": "typings install",
+    "postinstall": "node node_modules/typings/dist/bin.js install",
     "prepublish": "npm start"
   },
   "author": "Emil 'Skeen' Madsen",
@@ -18,7 +18,8 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.0",
     "lodash.assign": "^4.0.8",
-    "merge2": "^1.0.2"
+    "merge2": "^1.0.2",
+    "typings": "^2.0.0"
   },
   "dependencies": {
     "array-includes": "^3.0.2",
